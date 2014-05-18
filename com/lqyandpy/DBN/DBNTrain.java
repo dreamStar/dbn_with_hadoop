@@ -32,22 +32,29 @@ public class DBNTrain {
 		this.rate=argD;
 	}
 	
-	public void greedyLayerwiseTraining(double argSC,double argLR,int argH,WeightDecay argWD,boolean argG,int max_try){//停止条件,学习率,隐含节点的数目,权值衰减策略
+	public void greedyLayerwiseTraining(double argSC,double argLR,int argH,WeightDecay argWD,boolean argG,int max_try,int batch_size){//停止条件,学习率,隐含节点的数目,权值衰减策略
 		RBM tempR=new RBM(this.dataSet.getDimension(),argH,argG);
 		CDTrain tempCDT=new CDTrain(dataSet, tempR,max_try);
-		tempCDT.PersistentCD(argSC,argWD);
-		
+		if(batch_size == 1)
+			tempCDT.PersistentCD(argSC,argWD);
+		else
+			tempCDT.MiniBatchCD(argSC, argWD, batch_size);
 		//this.dbn.InsertRBM(tempR);
-		this.greedyLayerwiseTraining(tempR, argSC,argLR,argWD,max_try);
+		this.greedyLayerwiseTraining(tempR, argSC,argLR,argWD,max_try,batch_size);
 	}
 	
-	public void greedyLayerwiseTraining(RBM argSeed,double argSC,double argLR,WeightDecay argWD,int max_try){//第一层RBM，停止条件，学习率，权值衰减策略
+	public void greedyLayerwiseTraining(RBM argSeed,double argSC,double argLR,WeightDecay argWD,int max_try,int batch_size){//第一层RBM，停止条件，学习率，权值衰减策略
 		this.dbn.InsertRBM(argSeed);
 		RBM tempR=argSeed.CopyTiedRBM();//第一层已经训练过了，直接开始训练第二层
 		for(int i=1;i<this.dbn.Layers;i++){
 			Data tempD=this.getDataForNextLayer();//取样本层的训练数据
 			CDTrain tempCDT=new CDTrain(tempD,tempR,max_try);
-			tempCDT.PersistentCD(argSC,argWD);//训练本层RBM
+			//tempCDT.PersistentCD(argSC,argWD);//训练本层RBM
+			if(batch_size == 1)
+				tempCDT.PersistentCD(argSC,argWD);
+			else
+				tempCDT.MiniBatchCD(argSC, argWD, batch_size);
+			
 			
 			System.out.println("完成第"+(i+1)+"层训练");
 			

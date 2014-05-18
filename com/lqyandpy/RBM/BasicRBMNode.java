@@ -7,9 +7,10 @@ public class BasicRBMNode implements RBMNode{//
 	public int id;
 	public int type;//0：observ  1：lattent
 	public double bias;
-	public ArrayList<PLink> Links;
+	//public ArrayList<PLink> Links;
 	public double state=Double.NaN;
 	public double variance=1;//为了方便计算，定义二值节点的标准差为1
+	public RBM rbm;
 
 	/* (non-Javadoc)
 	 * @see com.lqyandpy.RBM.RBMNode#getID()
@@ -17,6 +18,11 @@ public class BasicRBMNode implements RBMNode{//
 	@Override
 	public int getID() {
 		return this.id;
+	}
+	
+	public BasicRBMNode(RBM parent)
+	{
+		this.rbm = parent;
 	}
 
 	/* (non-Javadoc)
@@ -61,8 +67,23 @@ public class BasicRBMNode implements RBMNode{//
 	public double getProbability(){//这样就不用管对方是高斯节点还是二值节点了
     	double tempT=0;
 		
-		for(PLink l:this.Links){
-			tempT+=l.weight*l.end.getState()/l.end.getVariance();
+//		for(PLink l:this.Links){
+//			tempT+=l.weight*l.end.getState()/l.end.getVariance();
+//		}
+		RBM  r = this.rbm;
+		if(this.type == 0)
+		{
+			for(int i = 0;i < r.W[0].length;++i)
+			{
+				tempT += r.W[this.id][i] * r.hNodes.get(i).getState() / r.hNodes.get(i).getVariance();
+			}
+		}
+		else
+		{
+			for(int i = 0;i < r.W.length;++i)
+			{
+				tempT += r.W[i][this.id] * r.vNodes.get(i).getState() / r.vNodes.get(i).getVariance();
+			}
 		}
 	
 		tempT+=this.bias;
@@ -100,12 +121,12 @@ public class BasicRBMNode implements RBMNode{//
 	@Override
 	public PLink findLink(int argE){
 		PLink tempL=null;
-		for(PLink l:this.Links){
-			if(l.end.getID()==argE){
-				tempL=l;
-				break;
-			}
-		}
+//		for(PLink l:this.Links){
+//			if(l.end.getID()==argE){
+//				tempL=l;
+//				break;
+//			}
+//		}
 		return tempL;
 	}
 	
@@ -135,13 +156,15 @@ public class BasicRBMNode implements RBMNode{//
 	@Override
 	public ArrayList<PLink> getLinks() {
 		// TODO Auto-generated method stub
-		return this.Links;
+		//return this.Links;
+		return null;
 	}
 
 	@Override
 	public void setLinks(ArrayList<PLink> argL) {
 		// TODO Auto-generated method stub
-		this.Links=argL;
+		//this.Links=argL;
+		
 	}
 	
 }

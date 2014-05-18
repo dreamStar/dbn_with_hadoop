@@ -18,18 +18,18 @@ public class Test {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		/*
-		double[][] tempI=new double[][]{
-				  {0,0,0,0,0,1,1},
-				  {1,0,0,1,0,0,1},
-				  {1,0,1,1,0,1,1},
-				  {0,1,1,1,0,1,0},
-				  {1,1,0,1,0,1,1},
-				  {1,1,0,1,1,1,1},
-				  {1,0,1,0,0,1,0},
-				  {1,1,1,1,1,1,1},
-				  {1,1,1,1,0,1,1}
-				  };*/
+		
+//		double[][] tempI=new double[][]{
+//				  {0,0,0,0,0,1,1},
+//				  {1,0,0,1,0,0,1},
+//				  {1,0,1,1,0,1,1},
+//				  {0,1,1,1,0,1,0},
+//				  {1,1,0,1,0,1,1},
+//				  {1,1,0,1,1,1,1},
+//				  {1,0,1,0,0,1,0},
+//				  {1,1,1,1,1,1,1},
+//				  {1,1,1,1,0,1,1}
+//				  };
 //		double[][] tempI=new double[][]{
 //				  {0,2,4,3,1,3,13},
 //				  {7,3,2,6,6,3,14},
@@ -42,6 +42,8 @@ public class Test {
 //				  {1,1,1,1,0,1,11}
 //				  };
 		//Tool.PrintW(tempI);
+		
+		
 		List<ArrayList<Double>> tempI_ex = read_datafile("D:/eclipse/workspace32/CRF/bin/com/lqyandpy/DBN/test.txt"); 
 		if(tempI_ex == null)
 		{
@@ -56,6 +58,10 @@ public class Test {
 		}
 		System.out.print("data ready.\n");
 		tempI_ex = null;
+		
+		
+		
+		
 		Data tempD=new Data(tempI,false);//这个归一化是针对某一属性进行的归一化，对图像而言不适用
 		
 		//Tool.PrintW(Data.Normalization(tempI));
@@ -78,7 +84,7 @@ public class Test {
 		
 		DBNTrain tempT=new DBNTrain(tempD,tempS);
 
-		tempT.greedyLayerwiseTraining(0.1,0.001,500,new L1(),true,50);
+		tempT.greedyLayerwiseTraining(0.1,0.001,500,new L1(),true,50,10);
 		
 		
 		//tempS.PermanentDBN("D:\\旧盘备份\\dbn.dat");

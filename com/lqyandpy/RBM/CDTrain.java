@@ -99,7 +99,7 @@ public class CDTrain {
 					}
 				}
 
-				this.rbm.UpdateRBM();//更新RBM,矩阵只表示了互连权值，节点的偏移值要另外设置
+				//this.rbm.UpdateRBM();//更新RBM,矩阵只表示了互连权值，节点的偏移值要另外设置
 //				for(RBMNode n:this.rbm.Nodes){//更新节点bias
 //					if(n.getType()==0){//更新可见层的bias
 //						n.setBias(n.getBias()+this.rate*((v0[n.getID()]-v1[n.getID()])/n.getVariance()));
@@ -174,7 +174,7 @@ public class CDTrain {
 					}
 				}
 
-				this.rbm.UpdateRBM();//更新RBM,矩阵只表示了互连权值，节点的偏移值要另外设置
+				//this.rbm.UpdateRBM();//更新RBM,矩阵只表示了互连权值，节点的偏移值要另外设置
 //				for(RBMNode n:this.rbm.Nodes){//更新节点bias
 //					//double tempWD=argWD==null?0:n.bias*argWD.getWeightCost();权值衰减通常不用于节点偏移
 //					if(n.getType()==0){//更新可见层的bias
@@ -270,7 +270,7 @@ public class CDTrain {
 					}
 				}
 				
-				this.rbm.UpdateRBM();//更新RBM,矩阵只表示了互连权值，节点的偏移值要另外设置
+				//this.rbm.UpdateRBM();//更新RBM,矩阵只表示了互连权值，节点的偏移值要另外设置
 //				for(RBMNode n:this.rbm.Nodes){//更新节点bias
 //					if(n.getType()==0){//更新可见层的bias
 //						n.setBias(n.getBias()+this.rate/(double)d.getDataCount()*(tempDeltaBV[n.getID()]));

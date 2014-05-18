@@ -199,7 +199,7 @@ public class RBM {
 		int tempH=this.hn;//隐节点数目
 		
 		for(int i=0;i<tempH;i++){//初始化隐节点，bias用随机数
-			BasicRBMNode tempR=new BasicRBMNode();
+			BasicRBMNode tempR=new BasicRBMNode(this);
 			tempR.setType(1);
 			tempR.setBias(0);
 			tempR.setID(i);
@@ -210,9 +210,9 @@ public class RBM {
 		for(int i=0;i<tempV;i++){//初始化显节点，bias用随机数
 			RBMNode tempR;
 			if(!argG){
-				tempR=new BasicRBMNode();
+				tempR=new BasicRBMNode(this);
 			}else{
-				tempR=new GaussRBMNode();
+				tempR=new GaussRBMNode(this);
 			}
 			tempR.setType(0);
 			tempR.setBias(0);//BUG
@@ -250,7 +250,7 @@ public class RBM {
 		
 		for(RBMNode n:this.hNodes){
 			ArrayList<PLink> tempLKS=new ArrayList<PLink>(); 
-			double[] tempW=this.getWRow(n.getID());//权向量
+			double[] tempW=this.getWColumn(n.getID());//权向量
 			for(int i=0;i<tempW.length;i++){
 				PLink tempL=new PLink();
 				tempL.weight=tempW[i];

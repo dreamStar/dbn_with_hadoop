@@ -8,10 +8,15 @@ public class GaussRBMNode implements RBMNode {//高斯节点一般只用于输入层
 	public int id;
 	public int type;//0：observ  1：lattent
 	public double bias;
-	public ArrayList<PLink> Links;
+	//public ArrayList<PLink> Links;
 	public double state=Double.NaN;
 	public double variance=1;//节点的标准差
+	public RBM rbm;
 	
+	public GaussRBMNode(RBM parent)
+	{
+		this.rbm = parent;
+	}
 	@Override
 	public int getID() {
 		// TODO Auto-generated method stub
@@ -55,10 +60,22 @@ public class GaussRBMNode implements RBMNode {//高斯节点一般只用于输入层
 		// TODO Auto-generated method stub
 		if(new Double(this.state).equals(Double.NaN)){//如果节点状态已经被清空，需要重新取样
 			double mu=0;
-			for(PLink l:this.Links){
-				mu+=l.weight*l.end.getState();
+//			for(PLink l:this.Links){
+//				mu+=l.weight*l.end.getState();
+//			}
+			
+			RBM r = this.rbm;
+			if(this.type == 0)
+			{
+				for(int i = 0;i < r.hNodes.size();++i)
+					mu += r.W[this.id][i]*r.hNodes.get(i).getState();
 			}
-		
+			else
+			{
+				for(int i = 0;i < r.vNodes.size();++i)
+					mu += r.W[i][this.id]*r.vNodes.get(i).getState();
+			}
+			
 			mu=this.bias+this.variance*mu;//计算高斯分布的均值
 			
 			GaussDistribution tempG=new GaussDistribution(mu,this.variance);
@@ -103,12 +120,12 @@ public class GaussRBMNode implements RBMNode {//高斯节点一般只用于输入层
 	public PLink findLink(int argE) {
 		// TODO Auto-generated method stub
 		PLink tempL=null;
-		for(PLink l:this.Links){
-			if(l.end.getID()==argE){
-				tempL=l;
-				break;
-			}
-		}
+//		for(PLink l:this.Links){
+//			if(l.end.getID()==argE){
+//				tempL=l;
+//				break;
+//			}
+//		}
 		return tempL;
 	}
 
@@ -139,13 +156,14 @@ public class GaussRBMNode implements RBMNode {//高斯节点一般只用于输入层
 	@Override
 	public ArrayList<PLink> getLinks() {
 		// TODO Auto-generated method stub
-		return this.Links;
+		//return this.Links;
+		return null;
 	}
 
 	@Override
 	public void setLinks(ArrayList<PLink> argL) {
 		// TODO Auto-generated method stub
-		this.Links=argL;
+		//this.Links=argL;
 	}
 	
 	
