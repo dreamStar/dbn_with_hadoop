@@ -91,5 +91,65 @@ public class SimpleDBN {
 		this.RBMStack=tempL;
 	}
 	
-	
+	private int find_layer(int[] bin,int key)
+	{
+		for(int i = 0;i < bin.length;++i)
+			if(bin[i] > key)
+				return i;
+		return -1;	
+	}
+	public int[] ann_bias;
+	public double[][] get_ann_wight(int out_num)
+	{
+		
+		int[] node_bin = new int[this.RBMStack.size()+2];//node_bin中第i个元素表示第i层（从上到下，从输出层到输入层）节点标号的后一个数
+		int layer_sum = this.RBMStack.size()+2;
+		node_bin[0] = out_num;
+		for(int i = 0;i < this.RBMStack.size() ;++i)
+		{
+			node_bin[i+1] = node_bin[i] + this.RBMStack.get(this.RBMStack.size()-1-i).hn+1;
+		}
+		node_bin[this.RBMStack.size()+1] = node_bin[this.RBMStack.size()] + this.RBMStack.get(0).vn + 1;
+		int node_sum = node_bin[layer_sum-1];
+		double[][] tempW = new double[node_sum][node_sum];
+		for(int i = 0;i < node_sum;++i)
+			for(int j = 0;j < node_sum;++j)
+				tempW[i][j] = Double.NaN;
+		for(int i = 0;i < node_sum;++i)
+		{
+			int layer = find_layer(node_bin,i);
+			if(layer == -1)
+				return tempW;
+			if(i == node_bin[layer]-1)
+				continue;
+			else if(layer == 0)
+			{
+				for(int j = node_bin[0];j < node_bin[1];++j)
+				{//偏移和非偏移节电都一样,随机初始化
+					double r = Math.random();
+					tempW[i][j] = r;
+					tempW[j][i] = r;
+				}
+			}
+			else if(layer < layer_sum-1)
+			{
+				for(int j = node_bin[layer];j < node_bin[layer+1]-1;++j)
+				{//非偏移结点
+					RBM i_rbm = this.RBMStack.get(this.RBMStack.size() - layer);
+					double[][] w = i_rbm.W;
+					double r = w[j-node_bin[layer]][i-node_bin[layer-1]];
+					tempW[i][j] = r;
+					tempW[j][i] = r;
+				}
+				//偏移结点
+				double r = this.RBMStack.get(this.RBMStack.size() - layer).hNodes.get(i-node_bin[layer-1]).getBias();
+				tempW[i][node_bin[layer+1]-1] = r;
+				tempW[node_bin[layer+1]-1][i] = r;
+			}
+		}
+		this.ann_bias = new int[layer_sum-1];
+		for(int i = 1;i < layer_sum;++i)
+			this.ann_bias[i-1] = node_bin[i]-1;
+		return tempW;
+	}
 }

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.lqyandpy.RBM.*;
+import com.lqyandpy.crf.*;
 
 public class Test {
 
@@ -19,17 +20,17 @@ public class Test {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-//		double[][] tempI=new double[][]{
-//				  {0,0,0,0,0,1,1},
-//				  {1,0,0,1,0,0,1},
-//				  {1,0,1,1,0,1,1},
-//				  {0,1,1,1,0,1,0},
-//				  {1,1,0,1,0,1,1},
-//				  {1,1,0,1,1,1,1},
-//				  {1,0,1,0,0,1,0},
-//				  {1,1,1,1,1,1,1},
-//				  {1,1,1,1,0,1,1}
-//				  };
+		double[][] tempI=new double[][]{
+				  {0,0,0,0,0,1,1},
+				  {1,0,0,1,0,0,1},
+				  {1,0,1,1,0,1,1},
+				  {0,1,1,1,0,1,0},
+				  {1,1,0,1,0,1,1},
+				  {1,1,0,1,1,1,1},
+				  {1,0,1,0,0,1,0},
+				  {1,1,1,1,1,1,1},
+				  {1,1,1,1,0,1,1}
+				  };
 //		double[][] tempI=new double[][]{
 //				  {0,2,4,3,1,3,13},
 //				  {7,3,2,6,6,3,14},
@@ -44,23 +45,21 @@ public class Test {
 		//Tool.PrintW(tempI);
 		
 		
-		List<ArrayList<Double>> tempI_ex = read_datafile("D:/eclipse/workspace32/CRF/bin/com/lqyandpy/DBN/test.txt"); 
-		if(tempI_ex == null)
-		{
-			System.out.print("not find data!\n");
-			return;
-		}
-		double[][] tempI =  new double[tempI_ex.size()][tempI_ex.get(0).size()-1];
-		for(int i = 0;i < tempI_ex.size();++i)
-		{
-			for(int j = 0;j < tempI_ex.get(i).size()-1;++j)
-				tempI[i][j] = tempI_ex.get(i).get(j);
-		}
-		System.out.print("data ready.\n");
-		tempI_ex = null;
-		
-		
-		
+//		List<ArrayList<Double>> tempI_ex = read_datafile("D:/eclipse/workspace32/CRF/bin/com/lqyandpy/DBN/test.txt"); 
+//		if(tempI_ex == null)
+//		{
+//			System.out.print("not find data!\n");
+//			return;
+//		}
+//		double[][] tempI =  new double[tempI_ex.size()][tempI_ex.get(0).size()-1];
+//		for(int i = 0;i < tempI_ex.size();++i)
+//		{
+//			for(int j = 0;j < tempI_ex.get(i).size()-1;++j)
+//				tempI[i][j] = tempI_ex.get(i).get(j);
+//		}
+//		System.out.print("data ready.\n");
+//		tempI_ex = null;
+			
 		
 		Data tempD=new Data(tempI,false);//这个归一化是针对某一属性进行的归一化，对图像而言不适用
 		
@@ -86,7 +85,6 @@ public class Test {
 
 		tempT.greedyLayerwiseTraining(0.1,0.001,500,new L1(),true,50,10);
 		
-		
 		//tempS.PermanentDBN("D:\\旧盘备份\\dbn.dat");
 		/*
 		Data tempDX=tempT.getDataForNextLayer();
@@ -99,7 +97,25 @@ public class Test {
 			System.out.println();
 		}*/
 		
+		System.out.print("prepare the ann weight\n");
+		double[][] w_for_ann = tempS.get_ann_wight(1); 
+		ANN ann = new ANN();
+		ann.InitAnn(w_for_ann,tempS.ann_bias,new TanhFunction(),new TanhFunction());
 		
+		Trainer tempTR=new Trainer();
+		tempTR.setLearningRate(0.2);
+		double[][] tempI_label = new double[tempI.length][tempI[0].length+1];
+		for(int i = 0;i < tempI_label.length;++i)
+		{
+			for(int j = 0;j < tempI_label[0].length;++j)
+			{
+				if(j == tempI_label[0].length-1)
+					tempI_label[i][j] = tempI_label[i][j-1];
+				else
+					tempI_label[i][j] = tempI[i][j];
+			}
+		}
+		tempTR.Train(ann,tempI_label, 0.01);
 
 	}
 	
