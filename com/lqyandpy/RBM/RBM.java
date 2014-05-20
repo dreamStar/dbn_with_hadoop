@@ -180,6 +180,13 @@ public class RBM {
 		return tempRBM;
 	}
 	
+	public RBM CopyTiedRBM(int hnode,int vnode){//这个方法专用于贪心逐层训练RBM，因此都是二值RBM
+		
+		RBM tempRBM=new RBM(vnode,hnode,false);
+		
+		return tempRBM;
+	}
+	
 	public double getFreeEnegy(double[] argI){//获得显层节点的自由能
 		double tempFE=1;
 		for(int i=0;i<this.hn;i++){
@@ -201,7 +208,7 @@ public class RBM {
 		for(int i=0;i<tempH;i++){//初始化隐节点，bias用随机数
 			BasicRBMNode tempR=new BasicRBMNode(this);
 			tempR.setType(1);
-			tempR.setBias(0);
+			tempR.setBias(Math.random());
 			tempR.setID(i);
 			//this.Nodes.add(tempR);
 			this.hNodes.add(tempR);
@@ -215,7 +222,7 @@ public class RBM {
 				tempR=new GaussRBMNode(this);
 			}
 			tempR.setType(0);
-			tempR.setBias(0);//BUG
+			tempR.setBias(Math.random());//BUG
 			tempR.setID(i);
 			//this.Nodes.add(tempR);
 			this.vNodes.add(tempR);

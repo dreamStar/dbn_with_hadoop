@@ -61,7 +61,7 @@ public class Test {
 //		tempI_ex = null;
 			
 		
-		Data tempD=new Data(tempI,false);//这个归一化是针对某一属性进行的归一化，对图像而言不适用
+		Data tempD=new Data(tempI,false,true);//这个归一化是针对某一属性进行的归一化，对图像而言不适用
 		
 		//Tool.PrintW(Data.Normalization(tempI));
 	    
@@ -83,7 +83,7 @@ public class Test {
 		
 		DBNTrain tempT=new DBNTrain(tempD,tempS);
 
-		tempT.greedyLayerwiseTraining(0.1,0.001,500,new L1(),true,50,10);
+		tempT.greedyLayerwiseTraining(0.1,0.001,new int[]{50,50},new L1(),true,50,10);
 		
 		//tempS.PermanentDBN("D:\\旧盘备份\\dbn.dat");
 		/*
@@ -104,18 +104,18 @@ public class Test {
 		
 		Trainer tempTR=new Trainer();
 		tempTR.setLearningRate(0.2);
-		double[][] tempI_label = new double[tempI.length][tempI[0].length+1];
-		for(int i = 0;i < tempI_label.length;++i)
-		{
-			for(int j = 0;j < tempI_label[0].length;++j)
-			{
-				if(j == tempI_label[0].length-1)
-					tempI_label[i][j] = tempI_label[i][j-1];
-				else
-					tempI_label[i][j] = tempI[i][j];
-			}
-		}
-		tempTR.Train(ann,tempI_label, 0.01);
+//		double[][] tempI_label = new double[tempI.length][tempI[0].length+1];
+//		for(int i = 0;i < tempI_label.length;++i)
+//		{
+//			for(int j = 0;j < tempI_label[0].length;++j)
+//			{
+//				if(j == tempI_label[0].length-1)
+//					tempI_label[i][j] = tempI_label[i][j-1];
+//				else
+//					tempI_label[i][j] = tempI[i][j];
+//			}
+//		}
+		tempTR.Train(ann,tempI, 0.01);
 
 	}
 	

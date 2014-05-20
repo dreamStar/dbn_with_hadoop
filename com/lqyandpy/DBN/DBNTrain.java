@@ -32,20 +32,21 @@ public class DBNTrain {
 		this.rate=argD;
 	}
 	
-	public void greedyLayerwiseTraining(double argSC,double argLR,int argH,WeightDecay argWD,boolean argG,int max_try,int batch_size){//停止条件,学习率,隐含节点的数目,权值衰减策略
-		RBM tempR=new RBM(this.dataSet.getDimension(),argH,argG);
+	public void greedyLayerwiseTraining(double argSC,double argLR,int[] argH,WeightDecay argWD,boolean argG,int max_try,int batch_size){//停止条件,学习率,隐含节点的数目,权值衰减策略
+		this.dbn.RBMStack.clear();
+		RBM tempR=new RBM(this.dataSet.getDimension(),argH[0],argG);
 		CDTrain tempCDT=new CDTrain(dataSet, tempR,max_try);
 		if(batch_size == 1)
 			tempCDT.PersistentCD(argSC,argWD);
 		else
 			tempCDT.MiniBatchCD(argSC, argWD, batch_size);
 		//this.dbn.InsertRBM(tempR);
-		this.greedyLayerwiseTraining(tempR, argSC,argLR,argWD,max_try,batch_size);
+		this.greedyLayerwiseTraining(tempR, argSC,argLR,argH,argWD,max_try,batch_size);
 	}
 	
-	public void greedyLayerwiseTraining(RBM argSeed,double argSC,double argLR,WeightDecay argWD,int max_try,int batch_size){//第一层RBM，停止条件，学习率，权值衰减策略
+	public void greedyLayerwiseTraining(RBM argSeed,double argSC,double argLR,int[] h_node,WeightDecay argWD,int max_try,int batch_size){//第一层RBM，停止条件，学习率，权值衰减策略
 		this.dbn.InsertRBM(argSeed);
-		RBM tempR=argSeed.CopyTiedRBM();//第一层已经训练过了，直接开始训练第二层
+		RBM tempR=argSeed.CopyTiedRBM(h_node[this.dbn.RBMStack.size()],argSeed.hn);//第一层已经训练过了，直接开始训练第二层
 		for(int i=1;i<this.dbn.Layers;i++){
 			Data tempD=this.getDataForNextLayer();//取样本层的训练数据
 			CDTrain tempCDT=new CDTrain(tempD,tempR,max_try);
@@ -59,7 +60,9 @@ public class DBNTrain {
 			System.out.println("完成第"+(i+1)+"层训练");
 			
 			this.dbn.InsertRBM(tempR);//将训练好的RBM放入栈中
-			tempR=tempR.CopyTiedRBM();//取得下一层原始RBM
+			if(this.dbn.RBMStack.size() >= this.dbn.Layers)
+				break;
+			tempR=tempR.CopyTiedRBM(h_node[this.dbn.RBMStack.size()],tempR.hn);//取得下一层原始RBM
 		}
 	}
 	
@@ -83,7 +86,7 @@ public class DBNTrain {
 			tempDB[tempC++]=tempI;
 		}
 		
-		return new Data(tempDB,false);//隐层都是二值的，不需要规范化
+		return new Data(tempDB,false,false);//隐层都是二值的，不需要规范化
 	}
 
 	

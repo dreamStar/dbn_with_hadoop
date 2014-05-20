@@ -26,7 +26,7 @@ public class Test {
 								  };
 		
 		
-		Data tempD=new Data(tempI,false);
+		Data tempD=new Data(tempI,false,false);
 		
 		/*
 		PermanentRBM tempP=new PermanentRBM();

@@ -31,14 +31,27 @@ public class Data {
 		return this.dataset;
 	}
 	
-	public Data(double[][] argD,boolean argN){//是否需要正规化
-		this.dimension=argD[0].length;
+	public Data(double[][] argD,boolean argN,boolean labeled){//是否需要正规化
 		
+		this.forSupervisedLearning = labeled;
+		if(this.forSupervisedLearning)
+			this.dimension=argD[0].length - 1;
+		else
+			this.dimension=argD[0].length;
 		if(argN){
 			argD=this.Normalization(argD);
 		}
 		for(double[] d:argD){
-			this.dataset.add(new Case(d));
+			double[] d_ex;
+			if(this.forSupervisedLearning)
+			{
+				d_ex = new double[d.length-1];
+				for(int i = 0;i < d.length-1;++i)
+					d_ex[i] = d[i]; 
+			}
+			else
+				d_ex = d; 
+			this.dataset.add(new Case(d_ex));
 		}
 	}
 	
