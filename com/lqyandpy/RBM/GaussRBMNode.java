@@ -116,18 +116,18 @@ public class GaussRBMNode implements RBMNode {//高斯节点一般只用于输入层
 	}
 	*/
 
-	@Override
-	public PLink findLink(int argE) {
-		// TODO Auto-generated method stub
-		PLink tempL=null;
+//	@Override
+//	public PLink findLink(int argE) {
+//		// TODO Auto-generated method stub
+//		PLink tempL=null;
 //		for(PLink l:this.Links){
 //			if(l.end.getID()==argE){
 //				tempL=l;
 //				break;
 //			}
 //		}
-		return tempL;
-	}
+//		return tempL;
+//	}
 
 	@Override
 	public double getVariance() {
@@ -153,18 +153,18 @@ public class GaussRBMNode implements RBMNode {//高斯节点一般只用于输入层
 		this.bias=argD;
 	}
 
-	@Override
-	public ArrayList<PLink> getLinks() {
-		// TODO Auto-generated method stub
-		//return this.Links;
-		return null;
-	}
+//	@Override
+//	public ArrayList<PLink> getLinks() {
+//		// TODO Auto-generated method stub
+//		return this.Links;
+//		
+//	}
 
-	@Override
-	public void setLinks(ArrayList<PLink> argL) {
-		// TODO Auto-generated method stub
-		//this.Links=argL;
-	}
+//	@Override
+//	public void setLinks(ArrayList<PLink> argL) {
+//		// TODO Auto-generated method stub
+//		this.Links=argL;
+//	}
 	
 	
 

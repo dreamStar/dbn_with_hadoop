@@ -124,20 +124,20 @@ public class RBM {
 		}
 	}
 	
-	public void UpdateRBM(){
-		for(RBMNode n:this.vNodes){
-			double[] tempW=this.getWRow(n.getID());
-			for(PLink l:n.getLinks()){
-				l.weight=tempW[l.end.getID()];
-			}	
-		}
-		for(RBMNode n:this.hNodes){
-			double[] tempW=this.getWColumn(n.getID());
-			for(PLink l:n.getLinks()){
-				l.weight=tempW[l.end.getID()];
-			}	
-		}
-	}
+//	public void UpdateRBM(){
+//		for(RBMNode n:this.vNodes){
+//			double[] tempW=this.getWRow(n.getID());
+//			for(PLink l:n.getLinks()){
+//				l.weight=tempW[l.end.getID()];
+//			}	
+//		}
+//		for(RBMNode n:this.hNodes){
+//			double[] tempW=this.getWColumn(n.getID());
+//			for(PLink l:n.getLinks()){
+//				l.weight=tempW[l.end.getID()];
+//			}	
+//		}
+//	}
 	
 	public PermanentRBM SaveAS(){
 		PermanentRBM tempP=new PermanentRBM();
@@ -242,31 +242,31 @@ public class RBM {
 //		
 //		}
 		
-		for(RBMNode n:this.vNodes){
-			ArrayList<PLink> tempLKS=new ArrayList<PLink>(); 
-			double[] tempW=this.getWRow(n.getID());//权向量
-			for(int i=0;i<tempW.length;i++){
-				PLink tempL=new PLink();
-				tempL.weight=tempW[i];
-				tempL.end=this.getNode(i, 1);
-				tempLKS.add(tempL);
-			}
-			n.setLinks(tempLKS);
-		
-		}
-		
-		for(RBMNode n:this.hNodes){
-			ArrayList<PLink> tempLKS=new ArrayList<PLink>(); 
-			double[] tempW=this.getWColumn(n.getID());//权向量
-			for(int i=0;i<tempW.length;i++){
-				PLink tempL=new PLink();
-				tempL.weight=tempW[i];
-				tempL.end=this.getNode(i, 0);
-				tempLKS.add(tempL);
-			}
-			n.setLinks(tempLKS);
-		
-		}
+//		for(RBMNode n:this.vNodes){
+//			ArrayList<PLink> tempLKS=new ArrayList<PLink>(); 
+//			double[] tempW=this.getWRow(n.getID());//权向量
+//			for(int i=0;i<tempW.length;i++){
+//				PLink tempL=new PLink();
+//				tempL.weight=tempW[i];
+//				tempL.end=this.getNode(i, 1);
+//				tempLKS.add(tempL);
+//			}
+//			n.setLinks(tempLKS);
+//		
+//		}
+//		
+//		for(RBMNode n:this.hNodes){
+//			ArrayList<PLink> tempLKS=new ArrayList<PLink>(); 
+//			double[] tempW=this.getWColumn(n.getID());//权向量
+//			for(int i=0;i<tempW.length;i++){
+//				PLink tempL=new PLink();
+//				tempL.weight=tempW[i];
+//				tempL.end=this.getNode(i, 0);
+//				tempLKS.add(tempL);
+//			}
+//			n.setLinks(tempLKS);
+//		
+//		}
 		
 		int a = 1;
 		

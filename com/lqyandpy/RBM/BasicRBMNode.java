@@ -118,17 +118,17 @@ public class BasicRBMNode implements RBMNode{//
 	/* (non-Javadoc)
 	 * @see com.lqyandpy.RBM.RBMNode#findLink(int)
 	 */
-	@Override
-	public PLink findLink(int argE){
-		PLink tempL=null;
+//	@Override
+//	public PLink findLink(int argE){
+//		PLink tempL=null;
 //		for(PLink l:this.Links){
 //			if(l.end.getID()==argE){
 //				tempL=l;
 //				break;
 //			}
 //		}
-		return tempL;
-	}
+//		return tempL;
+//	}
 	
 	public double getVariance(){
 		return this.variance;
@@ -153,18 +153,16 @@ public class BasicRBMNode implements RBMNode{//
 		this.bias=argD;
 	}
 
-	@Override
-	public ArrayList<PLink> getLinks() {
-		// TODO Auto-generated method stub
-		//return this.Links;
-		return null;
-	}
+//	@Override
+//	public ArrayList<PLink> getLinks() {
+//		// TODO Auto-generated method stub
+//		return this.Links;
+//	}
 
-	@Override
-	public void setLinks(ArrayList<PLink> argL) {
-		// TODO Auto-generated method stub
-		//this.Links=argL;
-		
-	}
+//	@Override
+//	public void setLinks(ArrayList<PLink> argL) {
+//		// TODO Auto-generated method stub
+//		this.Links=argL;		
+//	}
 	
 }

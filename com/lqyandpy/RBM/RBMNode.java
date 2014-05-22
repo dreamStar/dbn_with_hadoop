@@ -21,9 +21,9 @@ public interface RBMNode {
 
 	public abstract double getState();
 
-	public abstract PLink findLink(int argE);
-	public abstract ArrayList<PLink> getLinks();
-	public abstract void setLinks(ArrayList<PLink> argL);
+	//public abstract PLink findLink(int argE);
+	//public abstract ArrayList<PLink> getLinks();
+	//public abstract void setLinks(ArrayList<PLink> argL);
 	
 	public abstract double getVariance();
 
