@@ -61,19 +61,19 @@ public class Test {
 //		tempI_ex = null;
 			
 		
-		Data tempD=new Data(tempI,false,true);//Õâ¸ö¹éÒ»»¯ÊÇÕë¶ÔÄ³Ò»ÊôÐÔ½øÐÐµÄ¹éÒ»»¯£¬¶ÔÍ¼Ïñ¶øÑÔ²»ÊÊÓÃ
+		Data tempD=new Data(tempI,false,true);//ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä³Ò»ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ÐµÄ¹ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½ï¿½ï¿½
 		
 		//Tool.PrintW(Data.Normalization(tempI));
 	    
 		//PermanentRBM tempP=new PermanentRBM();
-		//tempP.ReadFromFile("D:\\¾ÉÅÌ±¸·Ý\\RBMS\\rbm5.txt");
+		//tempP.ReadFromFile("D:\\ï¿½ï¿½ï¿½Ì±ï¿½ï¿½ï¿½\\RBMS\\rbm5.txt");
 		//RBM tempR=tempP.ReBuildRBM();
 		SimpleDBN tempS=new SimpleDBN();
-		tempS.Layers=2;
-		
+		//tempS.Layers=2;
+		tempS.constructDBN(6,new int[]{50,50}, true);
 		//RBM tempR = new RBM(7,20,false);
 		
-		//tempS.RebuildDBN("D:\\¾ÉÅÌ±¸·Ý\\dbn.dat");
+		//tempS.RebuildDBN("D:\\ï¿½ï¿½ï¿½Ì±ï¿½ï¿½ï¿½\\dbn.dat");
 		
 		
 		
@@ -83,9 +83,9 @@ public class Test {
 		
 		DBNTrain tempT=new DBNTrain(tempD,tempS);
 
-		tempT.greedyLayerwiseTraining(0.1,0.001,new int[]{50,50},new L1(),true,50,10);
+		tempT.greedyLayerwiseTraining(0.1,0.001,new L1(),50,10);
 		
-		//tempS.PermanentDBN("D:\\¾ÉÅÌ±¸·Ý\\dbn.dat");
+		//tempS.PermanentDBN("D:\\ï¿½ï¿½ï¿½Ì±ï¿½ï¿½ï¿½\\dbn.dat");
 		/*
 		Data tempDX=tempT.getDataForNextLayer();
 		

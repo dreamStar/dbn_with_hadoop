@@ -5,17 +5,29 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.*;
+
 import com.lqyandpy.RBM.*;
 
 
 public class SimpleDBN {
 	public int Layers=2;
-	public ArrayList<RBM> RBMStack=new ArrayList<RBM>();//RBMStack(0)ÊÇ×îµ×²ã
+	public ArrayList<RBM> RBMStack=new ArrayList<RBM>();//RBMStack(0)ï¿½ï¿½ï¿½ï¿½×²ï¿½
 	public ArrayList<Double> output_layer;
 	public double[][] output_w;
 	public double[][] input_w; 
 	
-	
+	public void constructDBN(int input_num,int[] hidden_nums,boolean gauss)
+	{
+		this.RBMStack.clear();
+		
+		RBM tempR=new RBM(input_num,hidden_nums[0],gauss);
+		this.RBMStack.add(tempR);
+		for(int i = 1;i < hidden_nums.length;++i)
+		{
+			tempR = new RBM(hidden_nums[i-1],hidden_nums[i],false);
+			this.RBMStack.add(tempR);
+		}
+	}
 	public void add_output_layer(int type_sum)
 	{
 		this.output_layer = new ArrayList<Double>(type_sum);
@@ -102,7 +114,7 @@ public class SimpleDBN {
 	public double[][] get_ann_wight(int out_num)
 	{
 		
-		int[] node_bin = new int[this.RBMStack.size()+2];//node_binÖÐµÚi¸öÔªËØ±íÊ¾µÚi²ã£¨´ÓÉÏµ½ÏÂ£¬´ÓÊä³ö²ãµ½ÊäÈë²ã£©½Úµã±êºÅµÄºóÒ»¸öÊý
+		int[] node_bin = new int[this.RBMStack.size()+2];//node_binï¿½Ðµï¿½iï¿½ï¿½Ôªï¿½Ø±ï¿½Ê¾ï¿½ï¿½iï¿½ã£¨ï¿½ï¿½ï¿½Ïµï¿½ï¿½Â£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ãµ½ï¿½ï¿½ï¿½ï¿½ã£©ï¿½Úµï¿½ï¿½ÅµÄºï¿½Ò»ï¿½ï¿½ï¿½ï¿½
 		int layer_sum = this.RBMStack.size()+2;
 		node_bin[0] = out_num;
 		for(int i = 0;i < this.RBMStack.size() ;++i)
@@ -125,7 +137,7 @@ public class SimpleDBN {
 			else if(layer == 0)
 			{
 				for(int j = node_bin[0];j < node_bin[1];++j)
-				{//Æ«ÒÆºÍ·ÇÆ«ÒÆ½Úµç¶¼Ò»Ñù,Ëæ»ú³õÊ¼»¯
+				{//Æ«ï¿½ÆºÍ·ï¿½Æ«ï¿½Æ½Úµç¶¼Ò»ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½
 					double r = Math.random();
 					tempW[i][j] = r;
 					tempW[j][i] = r;
@@ -134,14 +146,14 @@ public class SimpleDBN {
 			else if(layer < layer_sum-1)
 			{
 				for(int j = node_bin[layer];j < node_bin[layer+1]-1;++j)
-				{//·ÇÆ«ÒÆ½áµã
+				{//ï¿½ï¿½Æ«ï¿½Æ½ï¿½ï¿½
 					RBM i_rbm = this.RBMStack.get(this.RBMStack.size() - layer);
 					double[][] w = i_rbm.W;
 					double r = w[j-node_bin[layer]][i-node_bin[layer-1]];
 					tempW[i][j] = r;
 					tempW[j][i] = r;
 				}
-				//Æ«ÒÆ½áµã
+				//Æ«ï¿½Æ½ï¿½ï¿½
 				double r = this.RBMStack.get(this.RBMStack.size() - layer).hNodes.get(i-node_bin[layer-1]).getBias();
 				tempW[i][node_bin[layer+1]-1] = r;
 				tempW[node_bin[layer+1]-1][i] = r;

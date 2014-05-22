@@ -32,41 +32,43 @@ public class DBNTrain {
 		this.rate=argD;
 	}
 	
-	public void greedyLayerwiseTraining(double argSC,double argLR,int[] argH,WeightDecay argWD,boolean argG,int max_try,int batch_size){//Í£Ö¹Ìõ¼þ,Ñ§Ï°ÂÊ,Òþº¬½ÚµãµÄÊýÄ¿,È¨ÖµË¥¼õ²ßÂÔ
-		this.dbn.RBMStack.clear();
-		RBM tempR=new RBM(this.dataSet.getDimension(),argH[0],argG);
+	public void greedyLayerwiseTraining(double argSC,double argLR,WeightDecay argWD,int max_try,int batch_size){//Í£Ö¹ï¿½ï¿½ï¿½ï¿½,Ñ§Ï°ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½Ä¿,È¨ÖµË¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		//this.dbn.RBMStack.clear();
+		//RBM tempR=new RBM(this.dataSet.getDimension(),argH[0],argG);
+		RBM tempR = this.dbn.getRBM(0);
 		CDTrain tempCDT=new CDTrain(dataSet, tempR,max_try);
 		if(batch_size == 1)
 			tempCDT.PersistentCD(argSC,argWD);
 		else
 			tempCDT.MiniBatchCD(argSC, argWD, batch_size);
 		//this.dbn.InsertRBM(tempR);
-		this.greedyLayerwiseTraining(tempR, argSC,argLR,argH,argWD,max_try,batch_size);
+		this.greedyLayerwiseTraining(tempR, argSC,argLR,argWD,max_try,batch_size);
 	}
 	
-	public void greedyLayerwiseTraining(RBM argSeed,double argSC,double argLR,int[] h_node,WeightDecay argWD,int max_try,int batch_size){//µÚÒ»²ãRBM£¬Í£Ö¹Ìõ¼þ£¬Ñ§Ï°ÂÊ£¬È¨ÖµË¥¼õ²ßÂÔ
-		this.dbn.InsertRBM(argSeed);
-		RBM tempR=argSeed.CopyTiedRBM(h_node[this.dbn.RBMStack.size()],argSeed.hn);//µÚÒ»²ãÒÑ¾­ÑµÁ·¹ýÁË£¬Ö±½Ó¿ªÊ¼ÑµÁ·µÚ¶þ²ã
-		for(int i=1;i<this.dbn.Layers;i++){
-			Data tempD=this.getDataForNextLayer();//È¡Ñù±¾²ãµÄÑµÁ·Êý¾Ý
+	public void greedyLayerwiseTraining(RBM argSeed,double argSC,double argLR,WeightDecay argWD,int max_try,int batch_size){//ï¿½ï¿½Ò»ï¿½ï¿½RBMï¿½ï¿½Í£Ö¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ§Ï°ï¿½Ê£ï¿½È¨ÖµË¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		//this.dbn.InsertRBM(argSeed);
+		//RBM tempR=argSeed.CopyTiedRBM(h_node[this.dbn.RBMStack.size()],argSeed.hn);//ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ñ¾ï¿½Ñµï¿½ï¿½ï¿½ï¿½ï¿½Ë£ï¿½Ö±ï¿½Ó¿ï¿½Ê¼Ñµï¿½ï¿½ï¿½Ú¶ï¿½ï¿½ï¿½
+		
+		for(int i=1;i<this.dbn.RBMStack.size();i++){
+			RBM tempR = this.dbn.getRBM(i);
+			Data tempD=this.getDataForNextLayer();//È¡ï¿½ï¿½ï¿½ï¿½Ñµï¿½ï¿½ï¿½ï¿½ï¿½
 			CDTrain tempCDT=new CDTrain(tempD,tempR,max_try);
-			//tempCDT.PersistentCD(argSC,argWD);//ÑµÁ·±¾²ãRBM
+			//tempCDT.PersistentCD(argSC,argWD);//Ñµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½RBM
 			if(batch_size == 1)
 				tempCDT.PersistentCD(argSC,argWD);
 			else
 				tempCDT.MiniBatchCD(argSC, argWD, batch_size);
 			
 			
-			System.out.println("Íê³ÉµÚ"+(i+1)+"²ãÑµÁ·");
+			System.out.println("ï¿½ï¿½Éµï¿½"+(i+1)+"ï¿½ï¿½Ñµï¿½ï¿½");
 			
-			this.dbn.InsertRBM(tempR);//½«ÑµÁ·ºÃµÄRBM·ÅÈëÕ»ÖÐ
-			if(this.dbn.RBMStack.size() >= this.dbn.Layers)
-				break;
-			tempR=tempR.CopyTiedRBM(h_node[this.dbn.RBMStack.size()],tempR.hn);//È¡µÃÏÂÒ»²ãÔ­Ê¼RBM
+			//this.dbn.InsertRBM(tempR);//ï¿½ï¿½Ñµï¿½ï¿½ï¿½Ãµï¿½RBMï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½
+			
+			//tempR=tempR.CopyTiedRBM(h_node[this.dbn.RBMStack.size()],tempR.hn);//È¡ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ô­Ê¼RBM
 		}
 	}
 	
-	public Data getDataForNextLayer(){//´Óµ±Ç°µÄRBM¶ÑÖÐÈ¡Ñù£¬×÷ÎªÏÂÒ»²ãRBMµÄÑµÁ·ÊäÈë
+	public Data getDataForNextLayer(){//ï¿½Óµï¿½Ç°ï¿½ï¿½RBMï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Ò»ï¿½ï¿½RBMï¿½ï¿½Ñµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		double[][] tempDB=new double[this.dataSet.getDataCount()][this.dbn.getTop().hn];
 		int tempC=0;
 		for(Case v:this.dataSet.getDataSet()){
@@ -86,7 +88,7 @@ public class DBNTrain {
 			tempDB[tempC++]=tempI;
 		}
 		
-		return new Data(tempDB,false,false);//Òþ²ã¶¼ÊÇ¶þÖµµÄ£¬²»ÐèÒª¹æ·¶»¯
+		return new Data(tempDB,false,false);//ï¿½ï¿½ï¿½ã¶¼ï¿½Ç¶ï¿½Öµï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½æ·¶ï¿½ï¿½
 	}
 
 	
