@@ -1,10 +1,15 @@
 package com.lqyandpy.DBN;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.*;
+
+import org.hsqldb.lib.StringInputStream;
 
 import com.lqyandpy.RBM.*;
 
@@ -16,11 +21,11 @@ public class SimpleDBN {
 	public double[][] output_w;
 	public double[][] input_w; 
 	
-	public void constructDBN(int input_num,int[] hidden_nums,boolean gauss)
+	public void constructDBN(int input_num,int[] hidden_nums,boolean guass)
 	{
 		this.RBMStack.clear();
 		
-		RBM tempR=new RBM(input_num,hidden_nums[0],gauss);
+		RBM tempR=new RBM(input_num,hidden_nums[0],guass);
 		this.RBMStack.add(tempR);
 		for(int i = 1;i < hidden_nums.length;++i)
 		{
@@ -61,6 +66,65 @@ public class SimpleDBN {
 	
 	public RBM getRBM(int argI){
 		return this.RBMStack.get(argI<this.RBMStack.size()&&argI>=0?argI:this.RBMStack.size()-1);
+	}
+	public String toString()
+	{
+		try{
+			ByteArrayOutputStream tempFO=new ByteArrayOutputStream();
+			ObjectOutputStream tempOO = new ObjectOutputStream(tempFO);
+			
+			ArrayList<PermanentRBM> tempPR=new ArrayList<PermanentRBM>();
+			for(RBM r:this.RBMStack){
+				tempPR.add(r.SaveAS());
+			}
+			
+			tempOO.writeObject(tempPR);
+
+			tempOO.close();
+			return tempFO.toString();
+        }catch(Exception e){
+        	e.printStackTrace();
+        }
+		return null;	
+	}
+	
+	public void RebuildDBNbyString(String s)
+	{
+		
+		try {
+			ByteArrayInputStream byte_in = new ByteArrayInputStream(s.getBytes());
+			ObjectInputStream o_in = new ObjectInputStream(byte_in);
+			ArrayList<PermanentRBM> tempPR = (ArrayList<PermanentRBM>)o_in.readObject();
+			ArrayList<RBM> tempL = new ArrayList<RBM>();
+			for(PermanentRBM pr:tempPR){
+				tempL.add(pr.ReBuildRBM());
+			}
+			o_in.close();
+			this.Layers=tempL.size();
+			this.RBMStack=tempL;
+		} catch (IOException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void combineDBN(SimpleDBN other)
+	{
+		if(other.RBMStack.size() != this.RBMStack.size())
+			return;
+		for(int i = 0;i < this.RBMStack.size();++i)
+		{
+			RBM thisone = this.RBMStack.get(i);
+			RBM thatone = other.RBMStack.get(i);
+			for(int row = 0;row < thisone.W.length;++row)
+				for(int col = 0;col < thisone.W[0].length;++col)
+					thisone.W[row][col] = (thisone.W[row][col] + thatone.W[row][col])/2.0;
+			for(int j = 0; j < thisone.hn;++j)
+				thisone.hNodes.get(j).setBias((thisone.hNodes.get(j).getBias() + thatone.hNodes.get(j).getBias())/2.0);
+			for(int j = 0; j < thisone.vn;++j)
+				thisone.vNodes.get(j).setBias((thisone.vNodes.get(j).getBias() + thatone.vNodes.get(j).getBias())/2.0);
+		}
 	}
 	
 	public void PermanentDBN(String argS){
