@@ -85,37 +85,20 @@ public class Test {
 
 		tempT.greedyLayerwiseTraining(0.1,0.001,new L1(),50,10);
 		
-		//tempS.PermanentDBN("D:\\���̱���\\dbn.dat");
-		/*
-		Data tempDX=tempT.getDataForNextLayer();
-		
-		int i=0;
-		for(int[] v:tempDX.databag){
-			tempR.PrintV(v);
-	//		System.out.println();
-			tempR.PrintV(tempI[i++]);
-			System.out.println();
-		}*/
-		
-		System.out.print("prepare the ann weight\n");
-		double[][] w_for_ann = tempS.get_ann_wight(1); 
-		ANN ann = new ANN();
-		ann.InitAnn(w_for_ann,tempS.ann_bias,new TanhFunction(),new TanhFunction());
-		
-		Trainer tempTR=new Trainer();
-		tempTR.setLearningRate(0.2);
-//		double[][] tempI_label = new double[tempI.length][tempI[0].length+1];
-//		for(int i = 0;i < tempI_label.length;++i)
-//		{
-//			for(int j = 0;j < tempI_label[0].length;++j)
-//			{
-//				if(j == tempI_label[0].length-1)
-//					tempI_label[i][j] = tempI_label[i][j-1];
-//				else
-//					tempI_label[i][j] = tempI[i][j];
-//			}
-//		}
-		tempTR.Train(ann,tempI, 0.01);
+		//String s = tempS.toString();
+		byte[] s = tempS.toBytes();
+		SimpleDBN rebuiled = new SimpleDBN();
+		rebuiled.RebuildDBNbyBytes(s);
+		int a = 1;
+//		System.out.print("prepare the ann weight\n");
+//		double[][] w_for_ann = tempS.get_ann_wight(1); 
+//		ANN ann = new ANN();
+//		ann.InitAnn(w_for_ann,tempS.ann_bias,new TanhFunction(),new TanhFunction());
+//		
+//		Trainer tempTR=new Trainer();
+//		tempTR.setLearningRate(0.2);
+//
+//		tempTR.Train(ann,tempI, 0.01);
 
 	}
 	

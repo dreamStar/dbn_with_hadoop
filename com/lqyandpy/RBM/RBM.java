@@ -5,15 +5,15 @@ import java.util.*;
 import com.lqyandpy.crf.Node;
 
 public class RBM {
-	public double[][] W;//È¨ÖµÏòÁ¿
-	public ArrayList<RBMNode> vNodes=new ArrayList<RBMNode>();//½Úµã
+	public double[][] W;//È¨Öµï¿½ï¿½ï¿½ï¿½
+	public ArrayList<RBMNode> vNodes=new ArrayList<RBMNode>();//ï¿½Úµï¿½
 	public ArrayList<RBMNode> hNodes=new ArrayList<RBMNode>();
-	public int hn;//Òþ½ÚµãÊýÄ¿£¬¾ØÕóµÄÁÐÊý
-	public int vn;//ÏÔ½ÚµãÊýÄ¿£¬¾ØÕóµÄÐÐÊý
+	public int hn;//ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	public int vn;//ï¿½Ô½Úµï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	public boolean type;//true:gaussRBM,false:binaryRBM
 	
 	public RBM(int argV,int argH,boolean argG){//argG true GaussRBM
-		//¸ø¶¨Òþ²Ø²ãºÍ¿É¼û²ã½ÚµãÊýÄ¿
+		//ï¿½ï¿½ï¿½ï¿½ï¿½Ø²ï¿½Í¿É¼ï¿½ï¿½Úµï¿½ï¿½ï¿½Ä¿
 		double[][] tempD=new double[argV][argH];
 		this.hn=argH;
 		this.vn=argV;
@@ -31,7 +31,7 @@ public class RBM {
 	}
 
 	public RBM(double[][] argD,boolean argG){
-		//¸ø¶¨È¨ÖØÀ´¹¹½¨RBM
+		//ï¿½ï¿½È¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½RBM
 		this.vn=argD.length;
 		this.hn=argD[0].length;
 		this.W=argD;
@@ -39,7 +39,7 @@ public class RBM {
 		
 	}
 	
-//	public RBMNode getNode(int argID,int argT){//ÀàÐÍºÍid
+//	public RBMNode getNode(int argID,int argT){//ï¿½ï¿½ï¿½Íºï¿½id
 //		RBMNode tempN=null;
 //		for(RBMNode n:Nodes){
 //			if(n.getID()==argID&&n.getType()==argT){
@@ -50,13 +50,13 @@ public class RBM {
 //		return tempN;
 //	}
 	
-	public RBMNode getNode(int argID,int argT){//ÀàÐÍºÍid
+	public RBMNode getNode(int argID,int argT){//ï¿½ï¿½ï¿½Íºï¿½id
 		RBMNode tempN= argT == 0?this.vNodes.get(argID):this.hNodes.get(argID);
 		
 		return tempN;
 	}
 	
-	public double[][] WT(){//WµÄ×ªÖÃ¾ØÕó
+	public double[][] WT(){//Wï¿½ï¿½×ªï¿½Ã¾ï¿½ï¿½ï¿½
 		double[][] tempRes=new double[this.W[0].length][this.W.length];
 		
 		for(int i=0;i<tempRes.length;i++){
@@ -90,7 +90,7 @@ public class RBM {
 		}
 	}
 	
-	public double[] getNodeState(int argT){//argT 1Òþ/0ÏÔ
+	public double[] getNodeState(int argT){//argT 1ï¿½ï¿½/0ï¿½ï¿½
 		double[] tempI=new double[argT==0?this.vn:this.hn];
 		
 		for(int i=0;i<tempI.length;i++){
@@ -166,12 +166,12 @@ public class RBM {
 		return tempP;
 	}
 	
-	public RBM CopyTiedRBM(){//Õâ¸ö·½·¨×¨ÓÃÓÚÌ°ÐÄÖð²ãÑµÁ·RBM£¬Òò´Ë¶¼ÊÇ¶þÖµRBM
+	public RBM CopyTiedRBM(){//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×¨ï¿½ï¿½ï¿½ï¿½Ì°ï¿½ï¿½ï¿½ï¿½ï¿½Ñµï¿½ï¿½RBMï¿½ï¿½ï¿½ï¿½Ë¶ï¿½ï¿½Ç¶ï¿½ÖµRBM
 		double[][] tempW=this.WT();
 		RBM tempRBM=new RBM(tempW,false);
 		
 //		for(RBMNode n:tempRBM.Nodes){
-//			n.setBias(this.getNode(n.getID(), (n.getType()+1)%2).getBias());//³õÊ¼»¯ÉÏ²ãÍøÂçµÄbias		
+//			n.setBias(this.getNode(n.getID(), (n.getType()+1)%2).getBias());//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ï²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½bias		
 //		}
 		for(RBMNode n:tempRBM.vNodes)
 			n.setBias(this.getNode(n.getID(), (n.getType()+1)%2).getBias());
@@ -180,14 +180,14 @@ public class RBM {
 		return tempRBM;
 	}
 	
-	public RBM CopyTiedRBM(int hnode,int vnode){//Õâ¸ö·½·¨×¨ÓÃÓÚÌ°ÐÄÖð²ãÑµÁ·RBM£¬Òò´Ë¶¼ÊÇ¶þÖµRBM
+	public RBM CopyTiedRBM(int hnode,int vnode){//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×¨ï¿½ï¿½ï¿½ï¿½Ì°ï¿½ï¿½ï¿½ï¿½ï¿½Ñµï¿½ï¿½RBMï¿½ï¿½ï¿½ï¿½Ë¶ï¿½ï¿½Ç¶ï¿½ÖµRBM
 		
 		RBM tempRBM=new RBM(vnode,hnode,false);
 		
 		return tempRBM;
 	}
 	
-	public double getFreeEnegy(double[] argI){//»ñµÃÏÔ²ã½ÚµãµÄ×ÔÓÉÄÜ
+	public double getFreeEnegy(double[] argI){//ï¿½ï¿½ï¿½ï¿½Ô²ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		double tempFE=1;
 		for(int i=0;i<this.hn;i++){
 			double tempHO=0;
@@ -201,20 +201,21 @@ public class RBM {
 	}
 	
 	public void ConstructRBM(double[][] argD,boolean argG){
-		//´Ó¾ØÕó¹¹ÔìÍ¼,ÁÐÊý¶ÔÓ¦visibleµÄÊýÄ¿£¬ÐÐÊý¶ÔÓ¦hiddenµÄÊýÄ¿£¬argGÖ¸Ê¾ÊÇ·ñ´´½¨guassrbm
-		int tempV=this.vn;//ÏÔ½ÚµãÊýÄ¿
-		int tempH=this.hn;//Òþ½ÚµãÊýÄ¿
+		//ï¿½Ó¾ï¿½ï¿½ï¿½ï¿½ï¿½Í¼,ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦visibleï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦hiddenï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½argGÖ¸Ê¾ï¿½Ç·ñ´´½ï¿½guassrbm
+		int tempV=this.vn;//ï¿½Ô½Úµï¿½ï¿½ï¿½Ä¿
+		int tempH=this.hn;//ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½Ä¿
 		
-		for(int i=0;i<tempH;i++){//³õÊ¼»¯Òþ½Úµã£¬biasÓÃËæ»úÊý
+		for(int i=0;i<tempH;i++){//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Úµã£¬biasï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			BasicRBMNode tempR=new BasicRBMNode(this);
 			tempR.setType(1);
 			tempR.setBias(Math.random());
 			tempR.setID(i);
+			tempR.setState(Double.NaN);
 			//this.Nodes.add(tempR);
 			this.hNodes.add(tempR);
 		}
 		
-		for(int i=0;i<tempV;i++){//³õÊ¼»¯ÏÔ½Úµã£¬biasÓÃËæ»úÊý
+		for(int i=0;i<tempV;i++){//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ô½Úµã£¬biasï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			RBMNode tempR;
 			if(!argG){
 				tempR=new BasicRBMNode(this);
@@ -224,6 +225,7 @@ public class RBM {
 			tempR.setType(0);
 			tempR.setBias(Math.random());//BUG
 			tempR.setID(i);
+			tempR.setState(Double.NaN);
 			//this.Nodes.add(tempR);
 			this.vNodes.add(tempR);
 		}
@@ -231,7 +233,7 @@ public class RBM {
 		
 //		for(RBMNode n:this.Nodes){
 //			ArrayList<PLink> tempLKS=new ArrayList<PLink>(); 
-//			double[] tempW=n.getType()==0?this.getWRow(n.getID()):this.getWColumn(n.getID());//È¨ÏòÁ¿
+//			double[] tempW=n.getType()==0?this.getWRow(n.getID()):this.getWColumn(n.getID());//È¨ï¿½ï¿½ï¿½ï¿½
 //			for(int i=0;i<tempW.length;i++){
 //				PLink tempL=new PLink();
 //				tempL.weight=tempW[i];
@@ -244,7 +246,7 @@ public class RBM {
 		
 //		for(RBMNode n:this.vNodes){
 //			ArrayList<PLink> tempLKS=new ArrayList<PLink>(); 
-//			double[] tempW=this.getWRow(n.getID());//È¨ÏòÁ¿
+//			double[] tempW=this.getWRow(n.getID());//È¨ï¿½ï¿½ï¿½ï¿½
 //			for(int i=0;i<tempW.length;i++){
 //				PLink tempL=new PLink();
 //				tempL.weight=tempW[i];
@@ -257,7 +259,7 @@ public class RBM {
 //		
 //		for(RBMNode n:this.hNodes){
 //			ArrayList<PLink> tempLKS=new ArrayList<PLink>(); 
-//			double[] tempW=this.getWColumn(n.getID());//È¨ÏòÁ¿
+//			double[] tempW=this.getWColumn(n.getID());//È¨ï¿½ï¿½ï¿½ï¿½
 //			for(int i=0;i<tempW.length;i++){
 //				PLink tempL=new PLink();
 //				tempL.weight=tempW[i];
@@ -267,8 +269,6 @@ public class RBM {
 //			n.setLinks(tempLKS);
 //		
 //		}
-		
-		int a = 1;
 		
 	}
 

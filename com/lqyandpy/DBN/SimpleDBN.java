@@ -81,11 +81,52 @@ public class SimpleDBN {
 			tempOO.writeObject(tempPR);
 
 			tempOO.close();
-			return tempFO.toString();
+			return tempFO.toByteArray().toString();
         }catch(Exception e){
         	e.printStackTrace();
         }
 		return null;	
+	}
+	public byte[] toBytes()
+	{
+		try{
+			ByteArrayOutputStream tempFO=new ByteArrayOutputStream();
+			ObjectOutputStream tempOO = new ObjectOutputStream(tempFO);
+			
+			ArrayList<PermanentRBM> tempPR=new ArrayList<PermanentRBM>();
+			for(RBM r:this.RBMStack){
+				tempPR.add(r.SaveAS());
+			}
+			
+			tempOO.writeObject(tempPR);
+
+			tempOO.close();
+			return tempFO.toByteArray();
+        }catch(Exception e){
+        	e.printStackTrace();
+        }
+		return null;	
+	}
+	
+	public void RebuildDBNbyBytes(byte[] s)
+	{
+		
+		try {
+			ByteArrayInputStream byte_in = new ByteArrayInputStream(s);
+			ObjectInputStream o_in = new ObjectInputStream(byte_in);
+			ArrayList<PermanentRBM> tempPR = (ArrayList<PermanentRBM>)o_in.readObject();
+			ArrayList<RBM> tempL = new ArrayList<RBM>();
+			for(PermanentRBM pr:tempPR){
+				tempL.add(pr.ReBuildRBM());
+			}
+			o_in.close();
+			this.Layers=tempL.size();
+			this.RBMStack=tempL;
+		} catch (IOException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void RebuildDBNbyString(String s)

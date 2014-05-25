@@ -25,10 +25,10 @@ import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
-
 import com.lqyandpy.DBN.DBNTrain;
 import com.lqyandpy.DBN.SimpleDBN;
 import com.lqyandpy.RBM.Data;
+import com.lqyandpy.RBM.L1;
 import com.lqyandpy.RBM.WeightDecay;
 
 
@@ -45,18 +45,18 @@ public class DBNpretrain extends Configured {
 		public WeightDecay wd_func;
 		public int max_try;
 		public int batch_size;
-		public int subset_size;
+		
 		
 	}
 	
 	public static double[][] data ;
 	
 	public static void setup_paramas
-	(int layer,int[] hidden_nums,double learning_rate,
-			double stop_threshold,WeightDecay wd_func,int max_try,int batch_size,int subset_size,int input_size)
+	(int[] hidden_nums,double learning_rate,
+			double stop_threshold,WeightDecay wd_func,int max_try,int batch_size,int input_size)
 	{
 		DBNpretrain.dbn = new SimpleDBN();
-		DBNpretrain.dbn.Layers = layer;
+		DBNpretrain.dbn.Layers = hidden_nums.length;
 		DBNpretrain.dbn.constructDBN(input_size, hidden_nums, true);
 		DBNpretrain.dbn_pretrain_params = new DBN_pretrain_params();
 		DBNpretrain.dbn_pretrain_params.hidden_nums = hidden_nums;
@@ -65,7 +65,7 @@ public class DBNpretrain extends Configured {
 		DBNpretrain.dbn_pretrain_params.max_try = max_try;
 		DBNpretrain.dbn_pretrain_params.stop_threshold = stop_threshold;
 		DBNpretrain.dbn_pretrain_params.wd_func = wd_func;
-		DBNpretrain.dbn_pretrain_params.subset_size = subset_size;
+		
 	}
 	
 	public static class ArrayWritable extends ArrayList<ArrayList<Double>> implements Writable
@@ -216,7 +216,7 @@ public class DBNpretrain extends Configured {
 			
 			DBNTrain train = new DBNTrain(tempD,DBNpretrain.dbn);
 			train.greedyLayerwiseTraining(dbn_pretrain_params.stop_threshold, dbn_pretrain_params.learning_rate, dbn_pretrain_params.wd_func, dbn_pretrain_params.max_try, dbn_pretrain_params.batch_size);
-			context.write(one, new Text(dbn.toString()));
+			context.write(one, new Text(dbn.toBytes()));
         }
 	}
 	public static class PretrainReducer extends Reducer<IntWritable,Text,IntWritable,Text>
@@ -226,10 +226,10 @@ public class DBNpretrain extends Configured {
 			for(Text v:value)
 			{
 				SimpleDBN d = new SimpleDBN();
-				d.RebuildDBNbyString(v.toString());
+				d.RebuildDBNbyBytes(v.getBytes());
 				DBNpretrain.dbn.combineDBN(d);
 			}
-			context.write(new IntWritable(1), new Text(DBNpretrain.dbn.toString()));
+			context.write(new IntWritable(1), new Text(DBNpretrain.dbn.toBytes()));
 		}
 	}
 	
@@ -241,7 +241,7 @@ public class DBNpretrain extends Configured {
 	      System.err.println("Usage: wordcount <in> <out>");
 	      System.exit(2);
 	    }
-	   
+	    DBNpretrain.setup_paramas(new int[]{10,10}, 0.001, 0.1, new L1(), 50, 2,6);
 	    Job job = new Job(conf, "dbn pretrain");
 	    job.setJarByClass(DBNpretrain.class);
 	    job.setMapperClass(PretrainMapper.class);
