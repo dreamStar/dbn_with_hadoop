@@ -30,13 +30,16 @@ import com.lqyandpy.DBN.SimpleDBN;
 import com.lqyandpy.RBM.Data;
 import com.lqyandpy.RBM.L1;
 import com.lqyandpy.RBM.WeightDecay;
+import com.lqyandpy.crf.ANN;
+import com.lqyandpy.crf.TanhFunction;
+import com.lqyandpy.crf.Trainer;
 
 
 public class DBNpretrain extends Configured {
 	
 	public static SimpleDBN dbn;
 	public static DBN_pretrain_params dbn_pretrain_params;
-	
+	public static String mid_dir; 
 	public static class DBN_pretrain_params
 	{
 		public int[] hidden_nums;
@@ -44,9 +47,7 @@ public class DBNpretrain extends Configured {
 		public double stop_threshold;
 		public WeightDecay wd_func;
 		public int max_try;
-		public int batch_size;
-		
-		
+		public int batch_size;			
 	}
 	
 	public static double[][] data ;
@@ -201,9 +202,7 @@ public class DBNpretrain extends Configured {
 	}
 	public static class PretrainMapper extends Mapper<LongWritable,ArrayWritable,IntWritable,Text>
 	{
-		private IntWritable one = new IntWritable(1);
-		
-		
+		private IntWritable one = new IntWritable(1);	
 		public void map(LongWritable key, ArrayWritable value, Context context) throws IOException, InterruptedException 
         {
 			if(value.isEmpty())
@@ -230,6 +229,31 @@ public class DBNpretrain extends Configured {
 				DBNpretrain.dbn.combineDBN(d);
 			}
 			context.write(new IntWritable(1), new Text(DBNpretrain.dbn.toBytes()));
+		}
+	}
+	
+	public static class ANNMapper extends Mapper<LongWritable,ArrayWritable,IntWritable,Text>
+	{
+		public void map(LongWritable key,ArrayWritable value,Context context)
+		{
+			if(value.isEmpty())
+				return;
+			data = new double[value.size()][value.get(0).size()];
+			for(int i = 0;i < value.size();++i)
+				for(int j = 0;j < value.get(i).size();++j)
+					data[i][j] = value.get(i).get(j);
+			DBNpretrain.dbn = new SimpleDBN();
+			DBNpretrain.dbn.RebuildDBN(DBNpretrain.mid_dir);
+			
+			double[][] w_for_ann = DBNpretrain.dbn.get_ann_wight(1); 
+			ANN ann = new ANN();
+			ann.InitAnn(w_for_ann,DBNpretrain.dbn.ann_bias,new TanhFunction(),new TanhFunction());
+			
+			Trainer tempTR=new Trainer();
+			tempTR.setLearningRate(0.2);
+
+			tempTR.Train(ann,data, 0.01);
+			context.write(new IntWritable(1), new Text());
 		}
 	}
 	

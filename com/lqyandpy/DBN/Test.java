@@ -85,20 +85,20 @@ public class Test {
 
 		tempT.greedyLayerwiseTraining(0.1,0.001,new L1(),50,10);
 		
-		//String s = tempS.toString();
-		byte[] s = tempS.toBytes();
-		SimpleDBN rebuiled = new SimpleDBN();
-		rebuiled.RebuildDBNbyBytes(s);
-		int a = 1;
-//		System.out.print("prepare the ann weight\n");
-//		double[][] w_for_ann = tempS.get_ann_wight(1); 
-//		ANN ann = new ANN();
-//		ann.InitAnn(w_for_ann,tempS.ann_bias,new TanhFunction(),new TanhFunction());
-//		
-//		Trainer tempTR=new Trainer();
-//		tempTR.setLearningRate(0.2);
-//
-//		tempTR.Train(ann,tempI, 0.01);
+		
+//		byte[] s = tempS.toBytes();
+//		SimpleDBN rebuiled = new SimpleDBN();
+//		rebuiled.RebuildDBNbyBytes(s);
+		
+		System.out.print("prepare the ann weight\n");
+		double[][] w_for_ann = tempS.get_ann_wight(1); 
+		ANN ann = new ANN();
+		ann.InitAnn(w_for_ann,tempS.ann_bias,new TanhFunction(),new TanhFunction());
+		
+		Trainer tempTR=new Trainer();
+		tempTR.setLearningRate(0.2);
+
+		tempTR.Train(ann,tempI, 0.01);
 
 	}
 	
