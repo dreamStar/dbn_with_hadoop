@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.*;
 
 import org.hsqldb.lib.StringInputStream;
@@ -14,7 +15,7 @@ import org.hsqldb.lib.StringInputStream;
 import com.lqyandpy.RBM.*;
 
 
-public class SimpleDBN {
+public class SimpleDBN implements Serializable {
 	public int Layers=2;
 	public ArrayList<RBM> RBMStack=new ArrayList<RBM>();//RBMStack(0)����ײ�
 	public ArrayList<Double> output_layer;
@@ -87,19 +88,19 @@ public class SimpleDBN {
         }
 		return null;	
 	}
-	public byte[] toBytes()
+	public static byte[] toBytes(SimpleDBN dbn)
 	{
 		try{
 			ByteArrayOutputStream tempFO=new ByteArrayOutputStream();
 			ObjectOutputStream tempOO = new ObjectOutputStream(tempFO);
 			
-			ArrayList<PermanentRBM> tempPR=new ArrayList<PermanentRBM>();
-			for(RBM r:this.RBMStack){
-				tempPR.add(r.SaveAS());
-			}
-			
-			tempOO.writeObject(tempPR);
-
+//			ArrayList<PermanentRBM> tempPR=new ArrayList<PermanentRBM>();
+//			for(RBM r:this.RBMStack){
+//				tempPR.add(r.SaveAS());
+//			}
+//			
+//			tempOO.writeObject(tempPR);
+			tempOO.writeObject(dbn);
 			tempOO.close();
 			return tempFO.toByteArray();
         }catch(Exception e){
@@ -108,25 +109,27 @@ public class SimpleDBN {
 		return null;	
 	}
 	
-	public void RebuildDBNbyBytes(byte[] s)
+	public static SimpleDBN  RebuildDBNbyBytes(byte[] s)
 	{
 		
 		try {
 			ByteArrayInputStream byte_in = new ByteArrayInputStream(s);
 			ObjectInputStream o_in = new ObjectInputStream(byte_in);
-			ArrayList<PermanentRBM> tempPR = (ArrayList<PermanentRBM>)o_in.readObject();
-			ArrayList<RBM> tempL = new ArrayList<RBM>();
-			for(PermanentRBM pr:tempPR){
-				tempL.add(pr.ReBuildRBM());
-			}
+//			ArrayList<PermanentRBM> tempPR = (ArrayList<PermanentRBM>)o_in.readObject();
+//			ArrayList<RBM> tempL = new ArrayList<RBM>();
+//			for(PermanentRBM pr:tempPR){
+//				tempL.add(pr.ReBuildRBM());
+//			}
+			SimpleDBN dbn = (SimpleDBN)o_in.readObject();
 			o_in.close();
-			this.Layers=tempL.size();
-			this.RBMStack=tempL;
+//			this.Layers=tempL.size();
+//			this.RBMStack=tempL;
+			return dbn;
 		} catch (IOException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		return null;
 	}
 	
 	public void RebuildDBNbyString(String s)

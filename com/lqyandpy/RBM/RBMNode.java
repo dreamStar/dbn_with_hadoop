@@ -1,8 +1,9 @@
 package com.lqyandpy.RBM;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public interface RBMNode {
+public interface RBMNode extends Serializable{
 
 	public abstract int getID();
 	public abstract void setID(int argI);

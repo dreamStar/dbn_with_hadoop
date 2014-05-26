@@ -1,9 +1,10 @@
 package com.lqyandpy.crf;
+import java.io.Serializable;
 import java.util.*;
 
-public interface Node extends Comparable<Node>{
-	public double getOutput();//½«Input×ª³ÉOutput
-	public int getFanIn();//½ÚµãµÄÉÈÈë
+public interface Node extends Comparable<Node> , Serializable{
+	public double getOutput();//ï¿½ï¿½Input×ªï¿½ï¿½Output
+	public int getFanIn();//ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	public int getNodeType();
 	public int getID();
 	public void setActivateFunction(ActivationFunction argF);

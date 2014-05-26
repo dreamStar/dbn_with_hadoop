@@ -1,7 +1,9 @@
 package com.lqyandpy.crf;
 
-public class Link {
-	public Double Weight;//Á¬½ÓµÄÈ¨ÖØ
-	public Node From;//Á¬½ÓµÄÆðµã
-	public Node To;//Á¬½ÓµÄÖÕµã
+import java.io.Serializable;
+
+public class Link implements Serializable {
+	public Double Weight;//ï¿½ï¿½ï¿½Óµï¿½È¨ï¿½ï¿½
+	public Node From;//ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ï¿½
+	public Node To;//ï¿½ï¿½ï¿½Óµï¿½ï¿½Õµï¿½
 }

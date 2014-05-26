@@ -1,13 +1,65 @@
 package com.lqyandpy.crf;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.*;
 
-public class ANN {
+public class ANN implements Serializable{
 	public ArrayList<Node> Nodes=new ArrayList<Node>();//
 	
 	public int NetworkSize;
 	
-	public ArrayList<InputNode> getInputNodes(){//ÊäÈë±äÁ¿ÁÐ±í
+	public static byte[] serialize(ANN ann)
+	{
+		
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(baos);
+			oos.writeObject(ann);
+			oos.close();
+			return baos.toByteArray();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+	
+	public static ANN deserialize(byte[] bytes)
+	{
+		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+		try {
+			ObjectInputStream ois = new ObjectInputStream(bais);
+			ANN ann = (ANN)ois.readObject();
+			return ann;
+		} catch (IOException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public void combineANN(ANN ann)
+	{
+		if(this.NetworkSize != ann.NetworkSize)
+			return;
+		for(int i = 0;i < this.Nodes.size();++i)
+		{
+			ArrayList<Link> thislist = this.Nodes.get(i).getLinks();
+			ArrayList<Link> thatlist = ann.Nodes.get(i).getLinks();
+			for(int j = 0;j < thislist.size();++j)
+			{
+				thislist.get(i).Weight = (thislist.get(i).Weight + thatlist.get(i).Weight) / 2.0;
+			}
+		}
+	}
+	
+	public ArrayList<InputNode> getInputNodes(){//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½
 		ArrayList<InputNode> tempN=new ArrayList<InputNode>();
 		for(Node n:Nodes){
 			if(n.getNodeType()==3){
@@ -18,7 +70,7 @@ public class ANN {
 		return tempN;
 	}
 	
-	public ArrayList<OutputNode> getOutputNodes(){//Êä³öµ¥ÔªÁÐ±í
+	public ArrayList<OutputNode> getOutputNodes(){//ï¿½ï¿½ï¿½ï¿½ï¿½Ôªï¿½Ð±ï¿½
 		ArrayList<OutputNode> tempN=new ArrayList<OutputNode>();
 		for(Node n:Nodes){
 			if(n.getNodeType()==1){
@@ -29,7 +81,7 @@ public class ANN {
 		return tempN;
 	}
 	
-	public ArrayList<HiddenNode> getHiddenNodes(){//Òþº¬µ¥ÔªÁÐ±í
+	public ArrayList<HiddenNode> getHiddenNodes(){//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôªï¿½Ð±ï¿½
 		ArrayList<HiddenNode> tempN=new ArrayList<HiddenNode>();
 		for(Node n:Nodes){
 			if(n.getNodeType()==2){
@@ -40,16 +92,16 @@ public class ANN {
 		return tempN;
 	}
 	
-	public double[] getOutput(double[] argD){//ÊäÈë±äÁ¿£¬ÇóÖµ
+	public double[] getOutput(double[] argD){//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
 		ArrayList<OutputNode> tempONS=this.getOutputNodes();
-		double[] tempR=new double[tempONS.size()];//×¼±¸Êä³ö
+		double[] tempR=new double[tempONS.size()];//×¼ï¿½ï¿½ï¿½ï¿½ï¿½
 		
 		ArrayList<InputNode> tempINS=this.getInputNodes();//
 		
 		//assert(argD.length==tempINS.size());
 		for(int i=0;i<argD.length;i++){
 			tempINS.get(i).Value=argD[i];
-		}//ÎªÊäÈë½Úµã¸³Öµ
+		}//Îªï¿½ï¿½ï¿½ï¿½Úµã¸³Öµ
 		
 		int i=0;
 		for(OutputNode on:tempONS){
@@ -67,7 +119,7 @@ public class ANN {
 	public ArrayList<Node> getNodesFrom(Node argN){
 		ArrayList<Node> tempL=new ArrayList<Node>();
 		switch(argN.getNodeType()){
-		case(1):break;//¶¥²ã½Úµã£¬Ã»ÓÐ´ÓËü³ö·¢µÄÁ¬½Ó
+		case(1):break;//ï¿½ï¿½ï¿½ï¿½Úµã£¬Ã»ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		case(2):
 			for(Node n:this.Nodes){
 				ArrayList<Link> tempLK=n.getLinks();
@@ -77,7 +129,7 @@ public class ANN {
 					}
 				}
 			}
-			break;//Òþ²ã½Úµã£¬ÓÐ´ÓËü³ö·¢µÄÁ¬½Ó
+			break;//ï¿½ï¿½ï¿½ï¿½Úµã£¬ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		case(3):
 			for(Node n:this.Nodes){
 				ArrayList<Link> tempLK=n.getLinks();
@@ -87,7 +139,7 @@ public class ANN {
 					}
 				}
 			}
-			break;//ÊäÈë²ã
+			break;//ï¿½ï¿½ï¿½ï¿½ï¿½
 		case(4):
 			for(Node n:this.Nodes){
 				ArrayList<Link> tempLK=n.getLinks();
@@ -97,44 +149,44 @@ public class ANN {
 					}
 				}
 			}
-			break;//Æ«ÒÆ
+			break;//Æ«ï¿½ï¿½
 		default:break;
 		}
 		
 		return tempL;
 	}
 	
-	public void InitAnn(double[][] argD,int[] argB,ActivationFunction argHF,ActivationFunction argOF){//´«ÈëÒ»¸ö·½Õó£¬ÍøÂç½á¹¹ºÍ³õÊ¼È¨Öµ.´Ó×î¸ß²ã¿ªÊ¼±àºÅ£¬Ô½ÍùÏÂ±àºÅÔ½´ó
-		//argB bias½Úµã±àºÅ
+	public void InitAnn(double[][] argD,int[] argB,ActivationFunction argHF,ActivationFunction argOF){//ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á¹¹ï¿½Í³ï¿½Ê¼È¨Öµ.ï¿½ï¿½ï¿½ï¿½ß²ã¿ªÊ¼ï¿½ï¿½Å£ï¿½Ô½ï¿½ï¿½ï¿½Â±ï¿½ï¿½Ô½ï¿½ï¿½
+		//argB biasï¿½Úµï¿½ï¿½ï¿½
 		this.NetworkSize=argD[0].length;
 		
 		for(int i=0;i<this.NetworkSize;i++){
 			switch(this.NodeType(i, argD[i],argB)){
-			case(1)://ÐÂ½¨¶¥²ã½Úµã
+			case(1)://ï¿½Â½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½
 				OutputNode tempON=new OutputNode();
 				tempON.id=i;
 				tempON.setActivateFunction(argOF);
 				Nodes.add(tempON);
-				System.out.println("ÐÂ½¨¶¥²ã½Úµã "+tempON.id);
+				System.out.println("ï¿½Â½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ "+tempON.id);
 			break;
-			case(2)://ÐÂ½¨Òþ²ã½Úµã
+			case(2)://ï¿½Â½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½
 				HiddenNode tempHN=new HiddenNode();
 				tempHN.id=i;
 				tempHN.setActivateFunction(argHF);
 				Nodes.add(tempHN);
-				System.out.println("ÐÂ½¨Òþ²ã½Úµã "+tempHN.id);
+				System.out.println("ï¿½Â½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ "+tempHN.id);
 			break;
-			case(3)://ÐÂ½¨ÊäÈë½Úµã
+			case(3)://ï¿½Â½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½
 				InputNode tempIN=new InputNode();
 				tempIN.id=i;
 				Nodes.add(tempIN);
-				System.out.println("ÐÂ½¨ÊäÈë½Úµã "+tempIN.id);
+				System.out.println("ï¿½Â½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ "+tempIN.id);
 			break;
-			case(4)://ÐÂ½¨bias½Úµã
+			case(4)://ï¿½Â½ï¿½biasï¿½Úµï¿½
 				BiasNode tempBN=new BiasNode();
 				tempBN.id=i;
 				Nodes.add(tempBN);
-				System.out.println("ÐÂ½¨Æ«ÒÆ½Úµã "+tempBN.id);
+				System.out.println("ï¿½Â½ï¿½Æ«ï¿½Æ½Úµï¿½ "+tempBN.id);
 			break;
 			default:break;
 			}
@@ -142,7 +194,7 @@ public class ANN {
 		
 		for(Node n:Nodes){
 			int tempID=n.getID();
-			double[] tempWV=argD[tempID];//Óë½Úµã¹ØÁªµÄÈ¨ÖµÏòÁ¿
+			double[] tempWV=argD[tempID];//ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¨Öµï¿½ï¿½ï¿½ï¿½
 			
 			switch(n.getNodeType()){
 			case(1):
@@ -200,7 +252,7 @@ public class ANN {
 	
 	
 	
-	public double[][] ConstructInitMatrix(int[][] argM){//Í¨ÓÃ³õÊ¼»¯Æ÷
+	public double[][] ConstructInitMatrix(int[][] argM){//Í¨ï¿½Ã³ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½
 		/*  1,2,n,n,n,n
 		 *  3,4,5,6,n,n
 		 *  7,8,9,n,n,n
@@ -223,12 +275,12 @@ public class ANN {
 		
 		for(int i=0;i<tempD;i++){
 			for(int j=0;j<tempD;j++){
-				if(i==j){//Ã»ÓÐ×ÔÁª½á
+				if(i==j){//Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					tempR[i][j]=Double.NaN;
 				}else{
-					if(new Double(tempR[i][j]).equals(Double.POSITIVE_INFINITY)){//Èç¹û»¹Ã»ÓÐ¸³Öµ
+					if(new Double(tempR[i][j]).equals(Double.POSITIVE_INFINITY)){//ï¿½ï¿½ï¿½Ã»ï¿½Ð¸ï¿½Öµ
 						int tempI=this.LayerCompare(i, j, argM);
-						if((Math.abs(tempI)>1)||(tempI==0)){//¿çÔ½²ã¼¶µÄ½ÚµãÎÞÁ¬½Ó,Í¬Ò»²ã½ÚµãÖ®¼äÎÞÁ´½Ó
+						if((Math.abs(tempI)>1)||(tempI==0)){//ï¿½ï¿½Ô½ï¿½ã¼¶ï¿½Ä½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,Í¬Ò»ï¿½ï¿½Úµï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 							tempR[i][j]=tempR[j][i]=Double.NaN;
 						}else{
 							double r=Math.random();
@@ -244,7 +296,7 @@ public class ANN {
 		
 	}
 	
-	/*Èý²ã½á¹¹µÄ×¨ÓÃ³õÊ¼»¯Æ÷*/
+	/*ï¿½ï¿½ï¿½á¹¹ï¿½ï¿½×¨ï¿½Ã³ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½*/
 	public double[][] ConstructInitMatrix(int argI,int[] argOL,int[] argHL,int[] argIL){
 		
 		double[][] tempR=new double[argI][argI];
@@ -255,12 +307,12 @@ public class ANN {
 		
 		for(int i=0;i<argI;i++){
 			for(int j=0;j<argI;j++){
-				if(i==j){//Ã»ÓÐ×ÔÁª½á
+				if(i==j){//Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					tempR[i][j]=Double.NaN;
 				}else{
-					if(new Double(tempR[i][j]).equals(Double.POSITIVE_INFINITY)){//Èç¹û»¹Ã»ÓÐ¸³Öµ
+					if(new Double(tempR[i][j]).equals(Double.POSITIVE_INFINITY)){//ï¿½ï¿½ï¿½Ã»ï¿½Ð¸ï¿½Öµ
 						int tempI=this.LayerCompare(i, j, argOL, argHL, argIL);
-						if((Math.abs(tempI)>1)||(tempI==0)){//¿çÔ½²ã¼¶µÄ½ÚµãÎÞÁ¬½Ó,Í¬Ò»²ã½ÚµãÖ®¼äÎÞÁ´½Ó
+						if((Math.abs(tempI)>1)||(tempI==0)){//ï¿½ï¿½Ô½ï¿½ã¼¶ï¿½Ä½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,Í¬Ò»ï¿½ï¿½Úµï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 							tempR[i][j]=tempR[j][i]=Double.NaN;
 						}else{
 							tempR[i][j]=tempR[j][i]=Math.random();
@@ -299,7 +351,7 @@ public class ANN {
 		
 	}
 	
-	private int LayerCompare(int argI,int argJ,int[] argOL,int[] argHL,int[] argIL){//·µ»Ø½ÚµãiºÍ½ÚµãjËùÔÚ²ã´ÎµÄ²îÖµ
+	private int LayerCompare(int argI,int argJ,int[] argOL,int[] argHL,int[] argIL){//ï¿½ï¿½ï¿½Ø½Úµï¿½iï¿½Í½Úµï¿½jï¿½ï¿½ï¿½Ú²ï¿½ÎµÄ²ï¿½Öµ
 		return this.getIndexLayer(argI, argOL, argHL, argIL)-this.getIndexLayer(argJ, argOL, argHL, argIL);
 	}
 	
@@ -347,13 +399,13 @@ public class ANN {
 	}
 	
 	
-	private int NodeType(int argI,double[] argD,int argB[]){//argI ½Úµã±àºÅ£¬argD argIµÄÁÚ½ÓÏòÁ¿
+	private int NodeType(int argI,double[] argD,int argB[]){//argI ï¿½Úµï¿½ï¿½Å£ï¿½argD argIï¿½ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ï¿½ï¿½
 		int minIndex=0;
 		int maxIndex=0;
 		
 		int res=-1;
 		
-		for(int i=0;i<argB.length;i++){//Ê×ÏÈ¼ì²éÊÇ·ñbias½Úµã
+		for(int i=0;i<argB.length;i++){//ï¿½ï¿½ï¿½È¼ï¿½ï¿½ï¿½Ç·ï¿½biasï¿½Úµï¿½
 			if(argI==argB[i]){
 				return 4;
 			}
@@ -374,14 +426,14 @@ public class ANN {
 		}
 		
 		if(maxIndex-argI>0&&minIndex-argI>0){
-			res=1;//Êä³ö½Úµã
+			res=1;//ï¿½ï¿½ï¿½ï¿½Úµï¿½
 		}else if(maxIndex-argI>0&&minIndex-argI<0){
-			res=2;//Òþ²Ø½Úµã
+			res=2;//ï¿½ï¿½ï¿½Ø½Úµï¿½
 		}else if(maxIndex-argI<0&&minIndex-argI<0){
-			res=3;//ÊäÈë½Úµã
+			res=3;//ï¿½ï¿½ï¿½ï¿½Úµï¿½
 		}
 		
-	//	System.out.println("½Úµã±êºÅ:"+argI+" min£º"+minIndex+" max:"+maxIndex+" res:"+res);
+	//	System.out.println("ï¿½Úµï¿½ï¿½ï¿½:"+argI+" minï¿½ï¿½"+minIndex+" max:"+maxIndex+" res:"+res);
 		
 		return res;
 	}

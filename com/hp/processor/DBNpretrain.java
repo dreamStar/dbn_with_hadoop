@@ -54,7 +54,7 @@ public class DBNpretrain extends Configured {
 	
 	public static void setup_paramas
 	(int[] hidden_nums,double learning_rate,
-			double stop_threshold,WeightDecay wd_func,int max_try,int batch_size,int input_size)
+			double stop_threshold,WeightDecay wd_func,int max_try,int batch_size,int input_size,String mid_dst)
 	{
 		DBNpretrain.dbn = new SimpleDBN();
 		DBNpretrain.dbn.Layers = hidden_nums.length;
@@ -66,7 +66,7 @@ public class DBNpretrain extends Configured {
 		DBNpretrain.dbn_pretrain_params.max_try = max_try;
 		DBNpretrain.dbn_pretrain_params.stop_threshold = stop_threshold;
 		DBNpretrain.dbn_pretrain_params.wd_func = wd_func;
-		
+		DBNpretrain.mid_dir = mid_dir;
 	}
 	
 	public static class ArrayWritable extends ArrayList<ArrayList<Double>> implements Writable
@@ -215,20 +215,26 @@ public class DBNpretrain extends Configured {
 			
 			DBNTrain train = new DBNTrain(tempD,DBNpretrain.dbn);
 			train.greedyLayerwiseTraining(dbn_pretrain_params.stop_threshold, dbn_pretrain_params.learning_rate, dbn_pretrain_params.wd_func, dbn_pretrain_params.max_try, dbn_pretrain_params.batch_size);
-			context.write(one, new Text(dbn.toBytes()));
+			context.write(one, new Text(SimpleDBN.toBytes(dbn)));
         }
 	}
 	public static class PretrainReducer extends Reducer<IntWritable,Text,IntWritable,Text>
 	{
 		public void reduce(IntWritable key,Iterable<Text> value,Context context) throws IOException, InterruptedException
 		{
+			dbn = null;
 			for(Text v:value)
 			{
-				SimpleDBN d = new SimpleDBN();
-				d.RebuildDBNbyBytes(v.getBytes());
-				DBNpretrain.dbn.combineDBN(d);
+//				SimpleDBN d = new SimpleDBN();
+//				d.RebuildDBNbyBytes(v.getBytes());
+//				DBNpretrain.dbn.combineDBN(d);
+				if(dbn == null)
+					dbn = SimpleDBN.RebuildDBNbyBytes(v.getBytes());
+				else
+					dbn.combineDBN(SimpleDBN.RebuildDBNbyBytes(v.getBytes()));
 			}
-			context.write(new IntWritable(1), new Text(DBNpretrain.dbn.toBytes()));
+			dbn.PermanentDBN(DBNpretrain.mid_dir);
+			context.write(new IntWritable(1), new Text(SimpleDBN.toBytes(DBNpretrain.dbn)));
 		}
 	}
 	
@@ -253,7 +259,36 @@ public class DBNpretrain extends Configured {
 			tempTR.setLearningRate(0.2);
 
 			tempTR.Train(ann,data, 0.01);
-			context.write(new IntWritable(1), new Text());
+			try {
+				context.write(new IntWritable(1), new Text(ANN.serialize(ann)));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static class ANNReducer extends Reducer<IntWritable,Text,IntWritable,Text>
+	{
+		public void reduce(IntWritable key, Iterable<Text> values,Context context)
+		{
+			ANN ann = null;
+			for(Text v:values)
+			{
+				if(ann == null)
+					ann = ANN.deserialize(v.getBytes());
+				else
+					ann.combineANN(ANN.deserialize(v.getBytes()));
+			}
+			try {
+				context.write(new IntWritable(1), new Text(ANN.serialize(ann)) );
+			} catch (IOException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -265,7 +300,7 @@ public class DBNpretrain extends Configured {
 	      System.err.println("Usage: wordcount <in> <out>");
 	      System.exit(2);
 	    }
-	    DBNpretrain.setup_paramas(new int[]{10,10}, 0.001, 0.1, new L1(), 50, 2,6);
+	    DBNpretrain.setup_paramas(new int[]{10,10}, 0.001, 0.1, new L1(), 50, 2,6,otherArgs[1]+"/"+"mid_model");
 	    Job job = new Job(conf, "dbn pretrain");
 	    job.setJarByClass(DBNpretrain.class);
 	    job.setMapperClass(PretrainMapper.class);

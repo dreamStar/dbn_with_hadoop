@@ -1,10 +1,11 @@
 package com.lqyandpy.RBM;
 
+import java.io.Serializable;
 import java.util.*;
 
 import com.lqyandpy.crf.Node;
 
-public class RBM {
+public class RBM implements Serializable {
 	public double[][] W;//Ȩֵ����
 	public ArrayList<RBMNode> vNodes=new ArrayList<RBMNode>();//�ڵ�
 	public ArrayList<RBMNode> hNodes=new ArrayList<RBMNode>();
