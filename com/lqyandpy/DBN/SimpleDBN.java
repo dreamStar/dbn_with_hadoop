@@ -173,7 +173,7 @@ public class SimpleDBN implements Serializable {
 	
 	public void PermanentDBN(String argS){
 		try{
-			FileOutputStream tempFO=new FileOutputStream(argS);
+			FileOutputStream tempFO=new FileOutputStream(argS,false);
 			ObjectOutputStream tempOO = new ObjectOutputStream(tempFO);
 			
 			ArrayList<PermanentRBM> tempPR=new ArrayList<PermanentRBM>();
@@ -184,7 +184,7 @@ public class SimpleDBN implements Serializable {
 			tempOO.writeObject(tempPR);
 
 			tempOO.close();
-			
+			tempFO.close();
         }catch(Exception e){
         	e.printStackTrace();
         }	

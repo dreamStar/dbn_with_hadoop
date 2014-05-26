@@ -3,10 +3,14 @@ package com.hp.processor;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.io.compress.CompressionCodec;
@@ -22,6 +26,8 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.Reducer.Context;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
+import org.apache.hadoop.mapreduce.lib.jobcontrol.ControlledJob;
+import org.apache.hadoop.mapreduce.lib.jobcontrol.JobControl;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
@@ -39,7 +45,8 @@ public class DBNpretrain extends Configured {
 	
 	public static SimpleDBN dbn;
 	public static DBN_pretrain_params dbn_pretrain_params;
-	public static String mid_dir; 
+	public static Path mid_dir; 
+	public static FileSystem fs;
 	public static class DBN_pretrain_params
 	{
 		public int[] hidden_nums;
@@ -54,7 +61,7 @@ public class DBNpretrain extends Configured {
 	
 	public static void setup_paramas
 	(int[] hidden_nums,double learning_rate,
-			double stop_threshold,WeightDecay wd_func,int max_try,int batch_size,int input_size,String mid_dst)
+			double stop_threshold,WeightDecay wd_func,int max_try,int batch_size,int input_size,Path mdir)
 	{
 		DBNpretrain.dbn = new SimpleDBN();
 		DBNpretrain.dbn.Layers = hidden_nums.length;
@@ -66,7 +73,7 @@ public class DBNpretrain extends Configured {
 		DBNpretrain.dbn_pretrain_params.max_try = max_try;
 		DBNpretrain.dbn_pretrain_params.stop_threshold = stop_threshold;
 		DBNpretrain.dbn_pretrain_params.wd_func = wd_func;
-		DBNpretrain.mid_dir = mid_dir;
+		DBNpretrain.mid_dir = mdir;
 	}
 	
 	public static class ArrayWritable extends ArrayList<ArrayList<Double>> implements Writable
@@ -233,7 +240,10 @@ public class DBNpretrain extends Configured {
 				else
 					dbn.combineDBN(SimpleDBN.RebuildDBNbyBytes(v.getBytes()));
 			}
-			dbn.PermanentDBN(DBNpretrain.mid_dir);
+			FSDataOutputStream out = fs.create(mid_dir);
+			out.write(SimpleDBN.toBytes(dbn));
+			out.close();
+			//dbn.PermanentDBN(DBNpretrain.mid_dir);
 			context.write(new IntWritable(1), new Text(SimpleDBN.toBytes(DBNpretrain.dbn)));
 		}
 	}
@@ -248,8 +258,20 @@ public class DBNpretrain extends Configured {
 			for(int i = 0;i < value.size();++i)
 				for(int j = 0;j < value.get(i).size();++j)
 					data[i][j] = value.get(i).get(j);
-			DBNpretrain.dbn = new SimpleDBN();
-			DBNpretrain.dbn.RebuildDBN(DBNpretrain.mid_dir);
+			byte[] model = new byte[10000];
+			try {
+				FSDataInputStream in = fs.open(DBNpretrain.mid_dir);
+				int cnt = in.read(model);
+				in.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+//			DBNpretrain.dbn = new SimpleDBN();
+//			DBNpretrain.dbn.RebuildDBN(DBNpretrain.mid_dir);
+			
+			DBNpretrain.dbn = SimpleDBN.RebuildDBNbyBytes(model);
 			
 			double[][] w_for_ann = DBNpretrain.dbn.get_ann_wight(1); 
 			ANN ann = new ANN();
@@ -294,26 +316,65 @@ public class DBNpretrain extends Configured {
 	
 	public static void main(String[] args) throws Exception {
 	    Configuration conf = new Configuration();
-	    
+	    //conf.addResource("/home/hadoop/hadoop-1.2.1/conf/core-site.xml");
+	    //conf.addResource("/home/hadoop/hadoop-1.2.1/conf/hdfs-site.xml");
+	    DBNpretrain.fs = FileSystem.get(new URI("hdfs://localhost:9000"),conf);
 	    String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 	    if (otherArgs.length != 2) {
 	      System.err.println("Usage: wordcount <in> <out>");
 	      System.exit(2);
 	    }
-	    DBNpretrain.setup_paramas(new int[]{10,10}, 0.001, 0.1, new L1(), 50, 2,6,otherArgs[1]+"/"+"mid_model");
-	    Job job = new Job(conf, "dbn pretrain");
-	    job.setJarByClass(DBNpretrain.class);
-	    job.setMapperClass(PretrainMapper.class);
-	    job.setReducerClass(PretrainReducer.class);
-	    job.setMapOutputKeyClass(IntWritable.class);
-	    job.setMapOutputValueClass(Text.class);
-	    job.setOutputKeyClass(IntWritable.class);
-	    job.setOutputValueClass(Text.class);
-	    job.setInputFormatClass(MyInputFormat.class);
-	    MyInputFormat.addInputPath(job, new Path(otherArgs[0]));
-	    FileOutputFormat.setOutputPath(job, new Path(otherArgs[1]+"/"+Math.random()));
+	    Path p1 = new Path(otherArgs[1]+"/pretrain");
+	    if(fs.exists(p1))
+	    	fs.delete(p1,true);
+	    Path p2 = new Path(otherArgs[1]+"/ann_train");
+	    if(fs.exists(p2))
+	    	fs.delete(p2,true);
+	    Path p1o_file = new Path(p1.getParent()+"/mid_model");
+	    
+	    DBNpretrain.setup_paramas(new int[]{10,10}, 0.001, 0.1, new L1(), 50, 2,6,p1o_file);
 
-	    System.exit(job.waitForCompletion(true) ? 0 : 1);
+	    Job job1 = new Job(conf, "dbn pretrain");
+	    job1.setJarByClass(DBNpretrain.class);
+	    job1.setMapperClass(PretrainMapper.class);
+	    job1.setReducerClass(PretrainReducer.class);
+	    job1.setMapOutputKeyClass(IntWritable.class);
+	    job1.setMapOutputValueClass(Text.class);
+	    job1.setOutputKeyClass(IntWritable.class);
+	    job1.setOutputValueClass(Text.class);
+	    job1.setInputFormatClass(MyInputFormat.class);
+	    MyInputFormat.addInputPath(job1, new Path(otherArgs[0]));
+	    
+	    
+	    FileOutputFormat.setOutputPath(job1, p1);
+	    
+	    Job job2 = new Job(conf, "ann train");
+	    job2.setJarByClass(DBNpretrain.class);
+	    job2.setMapperClass(ANNMapper.class);
+	    job2.setReducerClass(ANNReducer.class);
+	    job2.setMapOutputKeyClass(IntWritable.class);
+	    job2.setMapOutputValueClass(Text.class);
+	    job2.setOutputKeyClass(IntWritable.class);
+	    job2.setOutputValueClass(Text.class);
+	    job2.setInputFormatClass(MyInputFormat.class);
+	    
+	    MyInputFormat.addInputPath(job2, new Path(otherArgs[0]));
+	    
+	    FileOutputFormat.setOutputPath(job2, p2);
+	    
+	    JobControl jc = new JobControl("dbn train");
+	    ControlledJob cj1 = new ControlledJob(conf);
+	    cj1.setJob(job1);
+	    ControlledJob cj2 = new ControlledJob(conf);
+	    cj2.setJob(job2);
+	    cj2.addDependingJob(cj1);
+	    jc.addJob(cj1);
+	    jc.addJob(cj2);
+	    
+	    jc.run();
+	    
+	    
+	    //System.exit(job1.waitForCompletion(true) ? 0 : 1);
 
 	}
 }

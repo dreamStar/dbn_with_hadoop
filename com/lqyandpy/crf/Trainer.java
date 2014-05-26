@@ -38,13 +38,13 @@ public class Trainer {
 		return tempR;
 	}
 	
-	public void Train(ANN argA,double[][] argD,double argSC){
-		ArrayList<OutputNode> tempON=argA.getOutputNodes();//Êä³ö²ã½Úµã
-		ArrayList<InputNode>  tempIN=argA.getInputNodes();//ÊäÈë²ã½Úµã
-		ArrayList<HiddenNode> tempHN=argA.getHiddenNodes();//Òþº¬²ã½Úµã
+	public void Train(ANN argA,double[][] argD,double argSC,int max_try){
+		ArrayList<OutputNode> tempON=argA.getOutputNodes();//ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½
+		ArrayList<InputNode>  tempIN=argA.getInputNodes();//ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½
+		ArrayList<HiddenNode> tempHN=argA.getHiddenNodes();//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½
 		
-		double[][] tempIM=new double[argD.length][tempIN.size()];//ÊäÈëÖµMatrix
-		double[][] tempOM=new double[argD.length][tempON.size()];//Êä³öÖµMatrix
+		double[][] tempIM=new double[argD.length][tempIN.size()];//ï¿½ï¿½ï¿½ï¿½ÖµMatrix
+		double[][] tempOM=new double[argD.length][tempON.size()];//ï¿½ï¿½ï¿½ÖµMatrix
 		
 		for(int i=0;i<argD.length;i++){
 			for(int j=0;j<argD[0].length;j++){
@@ -70,11 +70,11 @@ public class Trainer {
 			
 			double tempMSE=this.getMSE(tempO, tempOM);
 			
-			System.out.println("µÚ"+epoch+"´ÎÑµÁ·£¬Îó²î£º"+tempMSE+"\r\n");
+			System.out.println("ï¿½ï¿½"+epoch+"ï¿½ï¿½Ñµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½î£º"+tempMSE+"\r\n");
 			
 			
 			if(!new Double(tempMSE).equals(Double.NaN)&&tempMSE<=argSC){
-				System.out.println("µÚ"+epoch+"´ÎÑµÁ·ÍøÂçÊÕÁ²");
+				System.out.println("ï¿½ï¿½"+epoch+"ï¿½ï¿½Ñµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
 				break;
 			}
 			
@@ -82,7 +82,11 @@ public class Trainer {
 				this.OnePointTrain(argA, tempIM[i], tempOM[i], argSC);
 			}
 
-			epoch++;
+			if(epoch++ >= max_try)
+			{
+				System.out.print("reached max try\n");
+				break;
+			}
 		}
 		
 	}
@@ -91,14 +95,14 @@ public class Trainer {
 			double[] tempO=argA.getOutput(argD);
 			ArrayList<OutputNode> tempON=argA.getOutputNodes();
 			int i=0;
-			for(OutputNode on:tempON){//¼ÆËãÊä³ö½ÚµãµÄdelta
+			for(OutputNode on:tempON){//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½delta
 				on.setdelta(on.getActivateFunction().derivation(on.getCachedAccumulate())*(argO[i]-tempO[i]));
 				i++;
 			}
 			
 			ArrayList<HiddenNode> tempHN=argA.getHiddenNodes();
-			for(HiddenNode hn:tempHN){//¼ÆËãÒþ²ã½ÚµãµÄdelta
-				ArrayList<Node> tempTN=argA.getNodesFrom(hn);//Òþ²ã½ÚµãËùÁ¬½ÓµÄËùÓÐÉÏ²ã½Úµã
+			for(HiddenNode hn:tempHN){//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½delta
+				ArrayList<Node> tempTN=argA.getNodesFrom(hn);//ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï²ï¿½Úµï¿½
 				double tempE=0;
 				for(Node tn:tempTN){
 					ArrayList<Link> tempL=tn.getLinks();
