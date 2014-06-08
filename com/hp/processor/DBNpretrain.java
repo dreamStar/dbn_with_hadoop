@@ -46,6 +46,7 @@ public class DBNpretrain extends Configured {
 	public static SimpleDBN dbn;
 	public static DBN_pretrain_params dbn_pretrain_params;
 	public static Path mid_dir; 
+	public static Path dst_dir;
 	public static FileSystem fs;
 	public static class DBN_pretrain_params
 	{
@@ -61,7 +62,7 @@ public class DBNpretrain extends Configured {
 	
 	public static void setup_paramas
 	(int[] hidden_nums,double learning_rate,
-			double stop_threshold,WeightDecay wd_func,int max_try,int batch_size,int input_size,Path mdir)
+			double stop_threshold,WeightDecay wd_func,int max_try,int batch_size,int input_size,Path mdir,Path ddir)
 	{
 		DBNpretrain.dbn = new SimpleDBN();
 		DBNpretrain.dbn.Layers = hidden_nums.length;
@@ -74,6 +75,7 @@ public class DBNpretrain extends Configured {
 		DBNpretrain.dbn_pretrain_params.stop_threshold = stop_threshold;
 		DBNpretrain.dbn_pretrain_params.wd_func = wd_func;
 		DBNpretrain.mid_dir = mdir;
+		DBNpretrain.dst_dir = ddir;
 	}
 	
 	public static class ArrayWritable extends ArrayList<ArrayList<Double>> implements Writable
@@ -280,7 +282,7 @@ public class DBNpretrain extends Configured {
 			Trainer tempTR=new Trainer();
 			tempTR.setLearningRate(0.2);
 
-			tempTR.Train(ann,data, 0.01);
+			tempTR.Train(ann,data, 0.01,50);
 			try {
 				context.write(new IntWritable(1), new Text(ANN.serialize(ann)));
 			} catch (IOException e) {
@@ -306,6 +308,10 @@ public class DBNpretrain extends Configured {
 					ann.combineANN(ANN.deserialize(v.getBytes()));
 			}
 			try {
+				
+				FSDataOutputStream out = fs.create(dst_dir);
+				out.write(ANN.serialize(ann));
+				out.close();
 				context.write(new IntWritable(1), new Text(ANN.serialize(ann)) );
 			} catch (IOException | InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -331,8 +337,9 @@ public class DBNpretrain extends Configured {
 	    if(fs.exists(p2))
 	    	fs.delete(p2,true);
 	    Path p1o_file = new Path(p1.getParent()+"/mid_model");
+	    Path final_file = new Path(p2.getParent() + "/dst_model");
 	    
-	    DBNpretrain.setup_paramas(new int[]{10,10}, 0.001, 0.1, new L1(), 50, 2,6,p1o_file);
+	    DBNpretrain.setup_paramas(new int[]{10,10}, 0.001, 0.1, new L1(), 50, 2,6,p1o_file,final_file);
 
 	    Job job1 = new Job(conf, "dbn pretrain");
 	    job1.setJarByClass(DBNpretrain.class);

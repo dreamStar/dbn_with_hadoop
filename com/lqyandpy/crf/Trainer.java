@@ -1,4 +1,5 @@
 package com.lqyandpy.crf;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Trainer {
@@ -11,7 +12,11 @@ public class Trainer {
 	public void setLearningRate(double argD){
 		this.learningrate=argD;
 	}
-	
+	public static void print_time(String s)
+	{
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		System.out.println(s + " at " + sf.format(new java.util.Date()));
+	}
 	
 	public double getWeight(Node argF,Node argT){
 		double tempR=Double.NaN;
@@ -57,6 +62,7 @@ public class Trainer {
 		}
 		
 		int epoch=0;
+		Trainer.print_time("ann train epoch "+epoch);
 		while(true){
 			double[][] tempO=new double[argD.length][tempON.size()];
 			for(int i=0;i<tempO.length;i++){

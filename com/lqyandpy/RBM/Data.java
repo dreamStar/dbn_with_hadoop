@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 public class Data {
-	private boolean forSupervisedLearning=false;//Êý¾ÝÊÇ·ñ°üº¬Àà±êÇ©
+	private boolean forSupervisedLearning=false;//ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½Ç©
 	private ArrayList<Case> dataset=new ArrayList<Case>();
 	private int dimension;
 	
@@ -31,7 +31,7 @@ public class Data {
 		return this.dataset;
 	}
 	
-	public Data(double[][] argD,boolean argN,boolean labeled){//ÊÇ·ñÐèÒªÕý¹æ»¯
+	public Data(double[][] argD,boolean argN,boolean labeled){//ï¿½Ç·ï¿½ï¿½ï¿½Òªï¿½ï¿½æ»¯
 		
 		this.forSupervisedLearning = labeled;
 		if(this.forSupervisedLearning)
@@ -62,7 +62,7 @@ public class Data {
 			double[] tempC=new double[tempD.length];
 			for(int i=0;i<tempC.length;i++){
 				tempC[i]=argD[i][j];
-			}//µÃµ½µÚjÁÐ
+			}//ï¿½Ãµï¿½ï¿½ï¿½jï¿½ï¿½
 			
 			double[] tempDM=Data.Dominator(tempC);
 			
@@ -101,19 +101,19 @@ public class Data {
 		this.dataset.add(argC);
 	}
 	
-	public int getDataCount(){//Êý¾Ý¼¯ÖÐÓÐ¶àÉÙÊý¾Ý
+	public int getDataCount(){//ï¿½ï¿½Ý¼ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return this.dataset.size();
 	}
 	
-	public int getDimension(){//Êý¾ÝµÄÎ¬¶È
+	public int getDimension(){//ï¿½ï¿½Ýµï¿½Î¬ï¿½ï¿½
 		return this.dimension;
 	}
 	
-	public double[] getData(int argI){//µÚargIÌõÊý¾Ý
+	public double[] getData(int argI){//ï¿½ï¿½argIï¿½ï¿½ï¿½ï¿½ï¿½
 		return this.dataset.get(argI).getTheCase();
 	}
 	
-	public double[] getColumn(int argI){//È¡µÃµÚargIÁÐ
+	public double[] getColumn(int argI){//È¡ï¿½Ãµï¿½argIï¿½ï¿½
 		double[] tempC=new double[this.getDataCount()];
 		for(int i=0;i<tempC.length;i++){
 			tempC[i]=this.getData(i)[argI];//databag[i][argI];
@@ -135,25 +135,22 @@ public class Data {
 	
 	public ArrayList<Data> splitMiniBatch(int argSZ){
 		ArrayList<Data> tempR=new ArrayList<Data>();
-		if(!this.forSupervisedLearning){
-			LinkedList<Integer> tempIX=new LinkedList<Integer>();
-			for(int i=0;i<this.getDataCount();i++){
-				tempIX.add(i);
+//		LinkedList<Integer> tempIX = new LinkedList<Integer>();
+//		for (int i = 0; i < this.getDataCount(); i++) {
+//			tempIX.add(i);
+//		}
+//		Collections.shuffle(tempIX);// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+		Data tempD = new Data(this.dimension);
+		for (int i = 0;i < this.getDataCount();++i) {
+			if (tempD.getDataCount() == argSZ) {
+				tempR.add(tempD);
+				tempD = new Data(this.dimension);
 			}
-			Collections.shuffle(tempIX);//ÖØÐÂÅÅÐò
-			
-			Data tempD=new Data(this.dimension);
-			for(Integer i:tempIX){
-				if(tempD.getDataCount()==argSZ){
-					tempR.add(tempD);
-					tempD=new Data(this.dimension);
-				}
-				tempD.addData(this.dataset.get(i));
-			}
-			
-			tempR.add(tempD);
-			
+			tempD.addData(this.dataset.get(i));
 		}
+
+		tempR.add(tempD);	
 		
 		return tempR;
 	}
@@ -164,11 +161,11 @@ public class Data {
 	}*/
 	
 	/*
-	public double getVariable(int argI,int argJ){//»ñµÃµÚiÐÐµÚjÁÐÊý¾Ý
+	public double getVariable(int argI,int argJ){//ï¿½ï¿½Ãµï¿½iï¿½Ðµï¿½jï¿½ï¿½ï¿½ï¿½ï¿½
 		return this.databag[argI][argJ];
 	}
 	
-	public boolean equalData(int argI,int argJ){//±È½ÏµÚargIÌõÊý¾ÝºÍµÚargJÌõÊý¾ÝÊÇ·ñÏàÍ¬
+	public boolean equalData(int argI,int argJ){//ï¿½È½Ïµï¿½argIï¿½ï¿½ï¿½ï¿½ÝºÍµï¿½argJï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Í¬
 		double[] tempI=this.getData(argI);
 		double[] tempJ=this.getData(argJ);
 		boolean tempB=true;
@@ -181,7 +178,7 @@ public class Data {
 		return tempB;
 	}
 	
-	public int countData(int argI){//µÚargIÌõÊý¾ÝÔÚÊý¾Ý¼¯ÖÐ³öÏÖÁË¼¸´Î
+	public int countData(int argI){//ï¿½ï¿½argIï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¼ï¿½ï¿½Ð³ï¿½ï¿½ï¿½ï¿½Ë¼ï¿½ï¿½ï¿½
 		int tempI=0;
 		for(int i=0;i<this.databag.length;i++){
 			if(this.equalData(argI, i)){

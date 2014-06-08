@@ -2,6 +2,7 @@ package com.lqyandpy.DBN;
 
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -13,6 +14,7 @@ import com.lqyandpy.RBM.BasicRBMNode;
 import com.lqyandpy.RBM.WeightDecay;
 
 
+
 public class DBNTrain {
 	//public double learningrate;
 	private Data dataSet;
@@ -21,7 +23,11 @@ public class DBNTrain {
 	
 	
 	//public Weight_Decay wd;
-	
+	public static void print_time(String s)
+	{
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		System.out.println(s + " at " + sf.format(new java.util.Date()));
+	}
 	
 	public DBNTrain(Data argD,SimpleDBN argN){
 		this.dataSet=argD;
@@ -51,7 +57,9 @@ public class DBNTrain {
 		
 		for(int i=1;i<this.dbn.RBMStack.size();i++){
 			RBM tempR = this.dbn.getRBM(i);
+			DBNTrain.print_time("get data");
 			Data tempD=this.getDataForNextLayer();//ȡ����ѵ�����
+			DBNTrain.print_time("get CDTrain instance");
 			CDTrain tempCDT=new CDTrain(tempD,tempR,max_try);
 			//tempCDT.PersistentCD(argSC,argWD);//ѵ������RBM
 			if(batch_size == 1)

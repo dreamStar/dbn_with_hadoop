@@ -13,10 +13,10 @@ public class Test {
 		ANN ann=new ANN();
 		
 		Integer nn=Integer.MIN_VALUE;
-		double[][] tempM=ann.ConstructInitMatrix(new int[][]{{0,nn,nn,nn,nn},//Êä³ö²ã
+		double[][] tempM=ann.ConstructInitMatrix(new int[][]{{0,nn,nn,nn,nn},//ï¿½ï¿½ï¿½ï¿½ï¿½
 				                                             {1,2,3,4,nn},
 				                                             {5,6,7,8,9},
-				                                             {10,11,12,13,nn}//ÊäÈë²ã
+				                                             {10,11,12,13,nn}//ï¿½ï¿½ï¿½ï¿½ï¿½
 				                                            });
 		
 		int[] tempB=new int[]{4,9,13};
@@ -41,7 +41,7 @@ public class Test {
 		Trainer tempTR=new Trainer();
 		tempTR.setLearningRate(0.2);
 		
-		tempTR.Train(ann, im, 0.01);
+		tempTR.Train(ann, im, 0.01,50);
 
 	}
 

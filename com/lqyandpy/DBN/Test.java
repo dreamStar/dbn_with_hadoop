@@ -5,13 +5,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.lqyandpy.RBM.*;
 import com.lqyandpy.crf.*;
-
 public class Test {
 
 	/**
@@ -20,30 +23,18 @@ public class Test {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		double[][] tempI=new double[][]{
-				  {0,0,0,0,0,1,1},
-				  {1,0,0,1,0,0,1},
-				  {1,0,1,1,0,1,1},
-				  {0,1,1,1,0,1,0},
-				  {1,1,0,1,0,1,1},
-				  {1,1,0,1,1,1,1},
-				  {1,0,1,0,0,1,0},
-				  {1,1,1,1,1,1,1},
-				  {1,1,1,1,0,1,1}
-				  };
 //		double[][] tempI=new double[][]{
-//				  {0,2,4,3,1,3,13},
-//				  {7,3,2,6,6,3,14},
-//				  {2,7,3,3,2,3,11},
-//				  {0,2,1,8,0,3,13},
-//				  {1,3,0,1,0,7,19},
-//				  {1,1,0,1,1,1,11},
-//				  {1,0,1,0,0,1,10},
-//				  {2,1,2,4,2,2,11},
-//				  {1,1,1,1,0,1,11}
+//				  {0,0,0,0,0,1,1},
+//				  {1,0,0,1,0,0,1},
+//				  {1,0,1,1,0,1,1},
+//				  {0,1,1,1,0,1,0},
+//				  {1,1,0,1,0,1,1},
+//				  {1,1,0,1,1,1,1},
+//				  {1,0,1,0,0,1,0},
+//				  {1,1,1,1,1,1,1},
+//				  {1,1,1,1,0,1,1}
 //				  };
-		//Tool.PrintW(tempI);
-		
+
 		
 //		List<ArrayList<Double>> tempI_ex = read_datafile("D:/eclipse/workspace32/CRF/bin/com/lqyandpy/DBN/test.txt"); 
 //		if(tempI_ex == null)
@@ -60,7 +51,7 @@ public class Test {
 //		System.out.print("data ready.\n");
 //		tempI_ex = null;
 			
-		
+		double[][] tempI = get_data_from_file("/mnt/hgfs/share/mnist_data_for_java/test.txt");
 		Data tempD=new Data(tempI,false,true);//�����һ�������ĳһ���Խ��еĹ�һ������ͼ����Բ�����
 		
 		//Tool.PrintW(Data.Normalization(tempI));
@@ -70,7 +61,8 @@ public class Test {
 		//RBM tempR=tempP.ReBuildRBM();
 		SimpleDBN tempS=new SimpleDBN();
 		//tempS.Layers=2;
-		tempS.constructDBN(6,new int[]{50,50}, true);
+		DBNTrain.print_time("try to constructDBN");
+		tempS.constructDBN(28*28,new int[]{500,500}, true);
 		//RBM tempR = new RBM(7,20,false);
 		
 		//tempS.RebuildDBN("D:\\���̱���\\dbn.dat");
@@ -82,8 +74,8 @@ public class Test {
 		//Tool.PrintW(tempS.getRBM(1).W);
 		
 		DBNTrain tempT=new DBNTrain(tempD,tempS);
-
-		tempT.greedyLayerwiseTraining(0.1,0.001,new L1(),50,10);
+		DBNTrain.print_time("begin to pretrain");
+		//tempT.greedyLayerwiseTraining(0.1,0.001,new L1(),0,10);
 		
 		
 //		byte[] s = tempS.toBytes();
@@ -91,14 +83,14 @@ public class Test {
 //		rebuiled.RebuildDBNbyBytes(s);
 		
 		System.out.print("prepare the ann weight\n");
-		double[][] w_for_ann = tempS.get_ann_wight(1); 
+		double[][] w_for_ann = tempS.get_ann_wight(10); 
 		ANN ann = new ANN();
 		ann.InitAnn(w_for_ann,tempS.ann_bias,new TanhFunction(),new TanhFunction());
 		
 		Trainer tempTR=new Trainer();
 		tempTR.setLearningRate(0.2);
-
-		tempTR.Train(ann,tempI, 0.01);
+		System.out.print("train ann network");
+		tempTR.Train(ann,tempI, 0.01,50);
 
 	}
 	
@@ -126,6 +118,38 @@ public class Test {
 		return ret;
 			
 		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static double[][] get_data_from_file(String filename)
+	{
+		File f = new File(filename);
+		try {
+			FileInputStream fin = new FileInputStream(f);
+			BufferedReader br = new BufferedReader(new InputStreamReader(fin));
+			String s;
+			ArrayList<double[]> ret = new ArrayList<double[]>();
+			
+			while((s = br.readLine()) != null)
+			{
+				String[] caseline = s.split("\t");
+				double[] x = new double[caseline.length];
+				for(int i = 0;i < x.length;++i)
+					x[i] = Double.parseDouble(caseline[i]);
+				ret.add(x);
+			}
+			double[][] tmp = new double[ret.size()][ret.get(0).length];
+			for(int i = 0;i < ret.size();++i)
+				for(int j = 0;j < ret.get(0).length;++j)
+					tmp[i][j] = ret.get(i)[j];
+			return tmp;
+		} catch (FileNotFoundException  e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
