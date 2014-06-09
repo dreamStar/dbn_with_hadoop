@@ -6,7 +6,7 @@ public class OutputNode implements Node {
     public ArrayList<Link> Links=new ArrayList<Link>();
     public int id;
     private ActivationFunction func;
-    private double accumulate;
+    private Double accumulate = Double.NaN;
     private double delta;
 	@Override
 	public double getOutput() {
@@ -18,9 +18,17 @@ public class OutputNode implements Node {
 		
 		this.accumulate=tempSum;
 		
-		return func.evaluate(tempSum);
+		return func.evaluate(this.accumulate);
 	}
-
+	public void clearNodeRecursive()
+	{
+		
+		this.accumulate = Double.NaN;
+		for (Link l : Links) {
+			Node tempN = l.From;
+			tempN.clearNodeRecursive();
+		}
+	}
 	@Override
 	public int getFanIn() {
 		// TODO Auto-generated method stub

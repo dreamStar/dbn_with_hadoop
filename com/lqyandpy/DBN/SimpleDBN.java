@@ -10,14 +10,12 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.*;
 
-import org.hsqldb.lib.StringInputStream;
-
 import com.lqyandpy.RBM.*;
 
 
 public class SimpleDBN implements Serializable {
 	public int Layers=2;
-	public ArrayList<RBM> RBMStack=new ArrayList<RBM>();//RBMStack(0)����ײ�
+	public ArrayList<RBM> RBMStack=new ArrayList<RBM>();//RBMStack(0)����ײￄ1�7
 	public ArrayList<Double> output_layer;
 	public double[][] output_w;
 	public double[][] input_w; 
@@ -125,7 +123,10 @@ public class SimpleDBN implements Serializable {
 //			this.Layers=tempL.size();
 //			this.RBMStack=tempL;
 			return dbn;
-		} catch (IOException | ClassNotFoundException e) {
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -146,7 +147,10 @@ public class SimpleDBN implements Serializable {
 			o_in.close();
 			this.Layers=tempL.size();
 			this.RBMStack=tempL;
-		} catch (IOException | ClassNotFoundException e) {
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -240,7 +244,7 @@ public class SimpleDBN implements Serializable {
 			int layer = find_layer(node_bin,i);
 			if(layer == -1)
 				return tempW;
-			if(i == node_bin[layer]-1)
+			if(layer != 0 && i == node_bin[layer]-1)
 				continue;
 			else if(layer == 0)
 			{
@@ -254,14 +258,14 @@ public class SimpleDBN implements Serializable {
 			else if(layer < layer_sum-1)
 			{
 				for(int j = node_bin[layer];j < node_bin[layer+1]-1;++j)
-				{//��ƫ�ƽ��
+				{//��ƫ�ƽ�ￄ1�7
 					RBM i_rbm = this.RBMStack.get(this.RBMStack.size() - layer);
 					double[][] w = i_rbm.W;
 					double r = w[j-node_bin[layer]][i-node_bin[layer-1]];
 					tempW[i][j] = r;
 					tempW[j][i] = r;
 				}
-				//ƫ�ƽ��
+				//ƫ�ƽ�ￄ1�7
 				double r = this.RBMStack.get(this.RBMStack.size() - layer).hNodes.get(i-node_bin[layer-1]).getBias();
 				tempW[i][node_bin[layer+1]-1] = r;
 				tempW[node_bin[layer+1]-1][i] = r;

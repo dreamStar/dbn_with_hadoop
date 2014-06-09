@@ -46,7 +46,7 @@ public class Trainer {
 	public void Train(ANN argA,double[][] argD,double argSC,int max_try){
 		ArrayList<OutputNode> tempON=argA.getOutputNodes();//�����ڵ�
 		ArrayList<InputNode>  tempIN=argA.getInputNodes();//�����ڵ�
-		ArrayList<HiddenNode> tempHN=argA.getHiddenNodes();//������ڵ�
+		ArrayList<HiddenNode> tempHN=argA.getHiddenNodes();//������ڵￄ1�7
 		
 		double[][] tempIM=new double[argD.length][tempIN.size()];//����ֵMatrix
 		double[][] tempOM=new double[argD.length][tempON.size()];//���ֵMatrix
@@ -55,8 +55,9 @@ public class Trainer {
 			for(int j=0;j<argD[0].length;j++){
 				if(j<tempIN.size()){
 					tempIM[i][j]=argD[i][j];
-				}else{
-					tempOM[i][j-tempIN.size()]=argD[i][j];
+				}else{			
+					tempOM[i][(int)argD[i][j]] = 1;
+					//tempOM[i][j-tempIN.size()]=argD[i][j];
 				}
 			}
 		}
@@ -66,17 +67,18 @@ public class Trainer {
 		while(true){
 			double[][] tempO=new double[argD.length][tempON.size()];
 			for(int i=0;i<tempO.length;i++){
+				//Trainer.print_time("clear nodes");
+				argA.clearNodes();
 				double[] tempISO=argA.getOutput(tempIM[i]);
 				for(int j=0;j<tempO[0].length;j++){
 					tempO[i][j]=tempISO[j];
-					System.out.println("["+tempO[i][j]+"  "+tempOM[i][j]+"]");
-				}
-			
+					//System.out.println("["+tempO[i][j]+"  "+tempOM[i][j]+"]");
+				}		
 			}
 			
 			double tempMSE=this.getMSE(tempO, tempOM);
 			
-			System.out.println("��"+epoch+"��ѵ������"+tempMSE+"\r\n");
+			System.out.println("��"+epoch+"��ѵ������1�7"+tempMSE+"\r\n");
 			
 			
 			if(!new Double(tempMSE).equals(Double.NaN)&&tempMSE<=argSC){

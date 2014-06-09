@@ -3,9 +3,9 @@ import java.util.*;
 
 public class InputNode implements Node {//输入节点，没有bias
 	//public ArrayList<Link> Links;
-	public double Value;
+	public Double Value = Double.NaN;
 	public int id;
-	public double accumulate;
+	public Double accumulate = Double.NaN;
 	//private double delta;
 	@Override
 	public double getOutput() {
@@ -20,7 +20,12 @@ public class InputNode implements Node {//输入节点，没有bias
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
+	public void clearNodeRecursive()
+	{
+		
+		this.Value = Double.NaN;
+		
+	}
 	
 	@Override
 	public int getID() {

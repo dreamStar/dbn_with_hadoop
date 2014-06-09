@@ -4,7 +4,7 @@ import java.util.*;
 
 public interface Node extends Comparable<Node> , Serializable{
 	public double getOutput();//��Inputת��Output
-	public int getFanIn();//�ڵ������
+	public int getFanIn();//�ڵ�����ￄ1�7
 	public int getNodeType();
 	public int getID();
 	public void setActivateFunction(ActivationFunction argF);
@@ -14,6 +14,6 @@ public interface Node extends Comparable<Node> , Serializable{
 	public double getCachedAccumulate();
 	public double getdelta();
 	public void setdelta(double argD);
-	
+	public void clearNodeRecursive();
 	//double getCachedOutput();
 }

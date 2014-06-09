@@ -10,7 +10,8 @@ import java.util.*;
 
 public class ANN implements Serializable{
 	public ArrayList<Node> Nodes=new ArrayList<Node>();//
-	
+	public ArrayList<InputNode> inputNodes = new ArrayList<InputNode>();
+	public ArrayList<OutputNode> outputNodes = new ArrayList<OutputNode>();
 	public int NetworkSize;
 	
 	public static byte[] serialize(ANN ann)
@@ -30,6 +31,12 @@ public class ANN implements Serializable{
 		
 	}
 	
+	public void clearNodes()
+	{
+		for(int i = 0;i < this.outputNodes.size();++i)
+			this.outputNodes.get(i).clearNodeRecursive();
+	}
+	
 	public static ANN deserialize(byte[] bytes)
 	{
 		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
@@ -37,7 +44,10 @@ public class ANN implements Serializable{
 			ObjectInputStream ois = new ObjectInputStream(bais);
 			ANN ann = (ANN)ois.readObject();
 			return ann;
-		} catch (IOException | ClassNotFoundException e) {
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -59,26 +69,31 @@ public class ANN implements Serializable{
 		}
 	}
 	
-	public ArrayList<InputNode> getInputNodes(){//��������б�
-		ArrayList<InputNode> tempN=new ArrayList<InputNode>();
-		for(Node n:Nodes){
-			if(n.getNodeType()==3){
-				tempN.add((InputNode)n);
+	public ArrayList<InputNode> getInputNodes(){//��������бￄ1�7
+		//ArrayList<InputNode> tempN=new ArrayList<InputNode>();
+		if(this.inputNodes.isEmpty())
+		{
+			for (Node n : Nodes) {
+				if (n.getNodeType() == 3) {
+					this.inputNodes.add((InputNode) n);
+				}
 			}
+			Collections.sort(this.inputNodes);
 		}
-		Collections.sort(tempN);
-		return tempN;
+		return this.inputNodes;
 	}
 	
-	public ArrayList<OutputNode> getOutputNodes(){//�����Ԫ�б�
-		ArrayList<OutputNode> tempN=new ArrayList<OutputNode>();
+	public ArrayList<OutputNode> getOutputNodes(){//�����Ԫ�бￄ1�7
+		if(!this.outputNodes.isEmpty())
+			return this.outputNodes;
+		//ArrayList<OutputNode> tempN=new ArrayList<OutputNode>();
 		for(Node n:Nodes){
 			if(n.getNodeType()==1){
-				tempN.add((OutputNode)n);
+				this.outputNodes.add((OutputNode)n);
 			}
 		}
-		Collections.sort(tempN);
-		return tempN;
+		Collections.sort(this.outputNodes);
+		return this.outputNodes;
 	}
 	
 	public ArrayList<HiddenNode> getHiddenNodes(){//������Ԫ�б�
@@ -92,17 +107,20 @@ public class ANN implements Serializable{
 		return tempN;
 	}
 	
-	public double[] getOutput(double[] argD){//�����������ֵ
+	public double[] getOutput(double[] argD){//�����������ք1�7
+		//Trainer.print_time("get output nodes");
 		ArrayList<OutputNode> tempONS=this.getOutputNodes();
-		double[] tempR=new double[tempONS.size()];//׼�����
-		
+		double[] tempR=new double[tempONS.size()];//׼����ￄ1�7
+		//Trainer.print_time("get input nodes");
 		ArrayList<InputNode> tempINS=this.getInputNodes();//
 		
 		//assert(argD.length==tempINS.size());
+		
 		for(int i=0;i<argD.length;i++){
 			tempINS.get(i).Value=argD[i];
-		}//Ϊ����ڵ㸳ֵ
+		}//Ϊ����ڵ㸳ք1�7
 		
+		//Trainer.print_time("get output value");
 		int i=0;
 		for(OutputNode on:tempONS){
 			tempR[i]=on.getOutput();
@@ -139,7 +157,7 @@ public class ANN implements Serializable{
 					}
 				}
 			}
-			break;//�����
+			break;//����ￄ1�7
 		case(4):
 			for(Node n:this.Nodes){
 				ArrayList<Link> tempLK=n.getLinks();
@@ -156,31 +174,31 @@ public class ANN implements Serializable{
 		return tempL;
 	}
 	
-	public void InitAnn(double[][] argD,int[] argB,ActivationFunction argHF,ActivationFunction argOF){//����һ����������ṹ�ͳ�ʼȨֵ.����߲㿪ʼ��ţ�Խ���±��Խ��
+	public void InitAnn(double[][] argD,int[] argB,ActivationFunction argHF,ActivationFunction argOF){//����һ����������ṹ�ͳ�ʼȨք1�7.����߲㿪ʼ��ţ�Խ���±��Խ�ￄ1�7
 		//argB bias�ڵ���
 		this.NetworkSize=argD[0].length;
 		
 		for(int i=0;i<this.NetworkSize;i++){
 			switch(this.NodeType(i, argD[i],argB)){
-			case(1)://�½�����ڵ�
+			case(1)://�½�����ڵￄ1�7
 				OutputNode tempON=new OutputNode();
 				tempON.id=i;
 				tempON.setActivateFunction(argOF);
 				Nodes.add(tempON);
-				System.out.println("�½�����ڵ� "+tempON.id);
+				System.out.println("�½�����ڵￄ1�7 "+tempON.id);
 			break;
-			case(2)://�½�����ڵ�
+			case(2)://�½�����ڵￄ1�7
 				HiddenNode tempHN=new HiddenNode();
 				tempHN.id=i;
 				tempHN.setActivateFunction(argHF);
 				Nodes.add(tempHN);
-				System.out.println("�½�����ڵ� "+tempHN.id);
+				System.out.println("�½�����ڵￄ1�7 "+tempHN.id);
 			break;
-			case(3)://�½�����ڵ�
+			case(3)://�½�����ڵￄ1�7
 				InputNode tempIN=new InputNode();
 				tempIN.id=i;
 				Nodes.add(tempIN);
-				System.out.println("�½�����ڵ� "+tempIN.id);
+				System.out.println("�½�����ڵￄ1�7 "+tempIN.id);
 			break;
 			case(4)://�½�bias�ڵ�
 				BiasNode tempBN=new BiasNode();
@@ -278,9 +296,9 @@ public class ANN implements Serializable{
 				if(i==j){//û��������
 					tempR[i][j]=Double.NaN;
 				}else{
-					if(new Double(tempR[i][j]).equals(Double.POSITIVE_INFINITY)){//���û�и�ֵ
+					if(new Double(tempR[i][j]).equals(Double.POSITIVE_INFINITY)){//���û�и�ք1�7
 						int tempI=this.LayerCompare(i, j, argM);
-						if((Math.abs(tempI)>1)||(tempI==0)){//��Խ�㼶�Ľڵ�������,ͬһ��ڵ�֮��������
+						if((Math.abs(tempI)>1)||(tempI==0)){//��Խ�㼶�Ľڵ�������,ͬһ��ڵ�֮�������ￄ1�7
 							tempR[i][j]=tempR[j][i]=Double.NaN;
 						}else{
 							double r=Math.random();
@@ -310,9 +328,9 @@ public class ANN implements Serializable{
 				if(i==j){//û��������
 					tempR[i][j]=Double.NaN;
 				}else{
-					if(new Double(tempR[i][j]).equals(Double.POSITIVE_INFINITY)){//���û�и�ֵ
+					if(new Double(tempR[i][j]).equals(Double.POSITIVE_INFINITY)){//���û�и�ք1�7
 						int tempI=this.LayerCompare(i, j, argOL, argHL, argIL);
-						if((Math.abs(tempI)>1)||(tempI==0)){//��Խ�㼶�Ľڵ�������,ͬһ��ڵ�֮��������
+						if((Math.abs(tempI)>1)||(tempI==0)){//��Խ�㼶�Ľڵ�������,ͬһ��ڵ�֮�������ￄ1�7
 							tempR[i][j]=tempR[j][i]=Double.NaN;
 						}else{
 							tempR[i][j]=tempR[j][i]=Math.random();
@@ -351,7 +369,7 @@ public class ANN implements Serializable{
 		
 	}
 	
-	private int LayerCompare(int argI,int argJ,int[] argOL,int[] argHL,int[] argIL){//���ؽڵ�i�ͽڵ�j���ڲ�εĲ�ֵ
+	private int LayerCompare(int argI,int argJ,int[] argOL,int[] argHL,int[] argIL){//���ؽڵ�i�ͽڵ�j���ڲ�εĲ�ք1�7
 		return this.getIndexLayer(argI, argOL, argHL, argIL)-this.getIndexLayer(argJ, argOL, argHL, argIL);
 	}
 	
@@ -426,11 +444,11 @@ public class ANN implements Serializable{
 		}
 		
 		if(maxIndex-argI>0&&minIndex-argI>0){
-			res=1;//����ڵ�
+			res=1;//����ڵￄ1�7
 		}else if(maxIndex-argI>0&&minIndex-argI<0){
 			res=2;//���ؽڵ�
 		}else if(maxIndex-argI<0&&minIndex-argI<0){
-			res=3;//����ڵ�
+			res=3;//����ڵￄ1�7
 		}
 		
 	//	System.out.println("�ڵ���:"+argI+" min��"+minIndex+" max:"+maxIndex+" res:"+res);

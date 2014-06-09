@@ -40,7 +40,7 @@ public class CDTrain {
 	}
 	
 	public double Errorta(){
-		System.out.println("--------------------------------�������----------------------------------");
+		System.out.println("--------------------------------������ￄ1�7----------------------------------");
 		double tempE=0;
 		
 		for(Case c:this.dataSet.getDataSet()){
@@ -49,10 +49,10 @@ public class CDTrain {
 			
 			double[] v=c.getTheCase();
 			this.rbm.setNodeState(v, 0);//Ϊ�ɼ�ڵ㸳ֵclamp
-			double[] h0=this.rbm.getNodeState(1);//��������ڵ�ȡ��
+			double[] h0=this.rbm.getNodeState(1);//��������ڵ�ȡ�ￄ1�7
 			this.rbm.clearNodeState(0);//��տɼ��
-			double[] v1=this.rbm.getNodeState(0);//�Կɼ��ȡ��
-			this.rbm.clearNodeState(1);//��������㡣
+			double[] v1=this.rbm.getNodeState(0);//�Կɼ��ȡ�ￄ1�7
+			this.rbm.clearNodeState(1);//��������㡄1�7
 			
 			double tempForm=0;
 			for(int i=0;i<v.length;i++){
@@ -70,11 +70,11 @@ public class CDTrain {
 		while(true){
 			for(int i=0;i<this.dataSet.getDataCount();i++){//��ʼһ��ѵ��
 				this.rbm.clearNodeState(0);
-				this.rbm.clearNodeState(1);//��ɨ�ɾ�����Ĳ���״̬
+				this.rbm.clearNodeState(1);//��ɨ�ɾ�����Ĳ���״̄1�7
 
 				double[] v0=this.dataSet.getData(i);
 				this.rbm.setNodeState(v0, 0);//���ÿɼ���״̬ΪV0
-				double[] tempHCV0=new double[this.rbm.hn];//��������ĸ���
+				double[] tempHCV0=new double[this.rbm.hn];//��������ĸ��ￄ1�7
 //				for(RBMNode n:this.rbm.Nodes){
 //					if(n.getType()==1){
 //						tempHCV0[n.getID()]=n.getProbability();
@@ -85,7 +85,7 @@ public class CDTrain {
 				double[] h0=this.rbm.getNodeState(1);//ȡ��H0;
 				this.rbm.clearNodeState(0);//��տɼ��
 				double[] v1=this.rbm.getNodeState(0);//ȡ��V1
-				this.rbm.clearNodeState(1);//������ز�
+				this.rbm.clearNodeState(1);//������زￄ1�7
 				double[] tempHCV1=new double[this.rbm.hn];//�������ز�ڵ�ĸ���
 				for(RBMNode n:this.rbm.hNodes)
 						tempHCV1[n.getID()]=n.getProbability();
@@ -100,7 +100,7 @@ public class CDTrain {
 					}
 				}
 
-				//this.rbm.UpdateRBM();//����RBM,����ֻ��ʾ�˻���Ȩֵ���ڵ��ƫ��ֵҪ��������
+				//this.rbm.UpdateRBM();//����RBM,����ֻ��ʾ�˻���Ȩֵ���ڵ��ƫ��ֵҪ�������ￄ1�7
 //				for(RBMNode n:this.rbm.Nodes){//���½ڵ�bias
 //					if(n.getType()==0){//���¿ɼ���bias
 //						n.setBias(n.getBias()+this.rate*((v0[n.getID()]-v1[n.getID()])/n.getVariance()));
@@ -116,7 +116,7 @@ public class CDTrain {
 			
 			epoch++;
 //			double tempE=this.Errorta();
-//			System.out.println("��"+epoch+" ��ѵ�����ع����"+tempE);
+//			System.out.println("��"+epoch+" ��ѵ�����ع���ￄ1�7"+tempE);
 //			if(tempE<=argSC){
 //				System.out.println("����"+epoch+" ��ѵ����RBM ����");
 //				break;				
@@ -130,7 +130,7 @@ public class CDTrain {
 	}
 	
 	public void PersistentCD(double argSC,WeightDecay argWD){//tielman��PCDѵ���㷨���Ƽ�ʹ��L2
-		/* �����ݶȵĵڶ���ʱ��ʹ�õ�ǰѵ�������������ǰһ��״̬��
+		/* �����ݶȵĵڶ���ʱ��ʹ�õ�ǰѵ�������������ǰһ��״̬�ￄ1�7
 		 * 
 		 * */
 		int epoch=0;
@@ -138,11 +138,11 @@ public class CDTrain {
 			double[] v1=this.sample();
 			for(int i=0;i<this.dataSet.getDataCount();i++){//��ʼһ��ѵ��
 				this.rbm.clearNodeState(0);
-				this.rbm.clearNodeState(1);//��ɨ�ɾ�����Ĳ���״̬
+				this.rbm.clearNodeState(1);//��ɨ�ɾ�����Ĳ���״̄1�7
 				
 				double[] v0=this.dataSet.getData(i);
 				this.rbm.setNodeState(v0, 0);//���ÿɼ���״̬ΪV0
-				double[] tempHCV0=new double[this.rbm.hn];//��������ĸ���
+				double[] tempHCV0=new double[this.rbm.hn];//��������ĸ��ￄ1�7
 //				for(RBMNode n:this.rbm.Nodes){
 //					if(n.getType()==1){
 //						tempHCV0[n.getID()]=n.getProbability();
@@ -160,9 +160,9 @@ public class CDTrain {
 //				}
 				for(RBMNode n:this.rbm.hNodes)
 						tempHCV1[n.getID()]=n.getProbability();
-				this.rbm.getNodeState(1);//��ݸ��ʸ����㸳ֵ
+				this.rbm.getNodeState(1);//��ݸ��ʸ����㸳ք1�7
 				this.rbm.clearNodeState(0);
-				v1=this.rbm.getNodeState(0);//��ݸ��ʸ��Բ㸳ֵ������
+				v1=this.rbm.getNodeState(0);//��ݸ��ʸ��Բ㸳ֵ�����ￄ1�7
 				this.rbm.clearNodeState(1);
 				
 				for(int v=0;v<this.rbm.vn;v++){
@@ -175,7 +175,7 @@ public class CDTrain {
 					}
 				}
 
-				//this.rbm.UpdateRBM();//����RBM,����ֻ��ʾ�˻���Ȩֵ���ڵ��ƫ��ֵҪ��������
+				//this.rbm.UpdateRBM();//����RBM,����ֻ��ʾ�˻���Ȩֵ���ڵ��ƫ��ֵҪ�������ￄ1�7
 //				for(RBMNode n:this.rbm.Nodes){//���½ڵ�bias
 //					//double tempWD=argWD==null?0:n.bias*argWD.getWeightCost();Ȩֵ˥��ͨ�������ڽڵ�ƫ��
 //					if(n.getType()==0){//���¿ɼ���bias
@@ -192,7 +192,7 @@ public class CDTrain {
 			
 			epoch++;
 //			double tempE=this.Errorta();
-//			System.out.println("��"+epoch+" ��ѵ�����ع����"+tempE);
+//			System.out.println("��"+epoch+" ��ѵ�����ع���ￄ1�7"+tempE);
 //			if(tempE<=argSC || epoch >= this.max_try){
 //				System.out.println("����"+epoch+" ��ѵ����RBM ѵ������");
 //				break;				
@@ -205,7 +205,7 @@ public class CDTrain {
 	
 	public void MiniBatchCD(double argSC,WeightDecay argWD,int argMBS){
 		//ʹ��minibatch��CD1ѵ��
-		//Ҫ���minibatch����������ѧϰ�ʣ������ٶ�ȷʵ���
+		//Ҫ���minibatch����������ѧϰ�ʣ������ٶ�ȷʵ��ￄ1�7
 		//argMBS minibatch������
 		
 		int epoch=0;
@@ -226,7 +226,7 @@ public class CDTrain {
 					
 					double[] v0=c.getTheCase();
 					this.rbm.setNodeState(v0, 0);//���ÿɼ���״̬ΪV0
-					double[] tempHCV0=new double[this.rbm.hn];//��������ĸ���
+					double[] tempHCV0=new double[this.rbm.hn];//��������ĸ��ￄ1�7
 //					for(RBMNode n:this.rbm.Nodes){
 //						if(n.getType()==1){
 //							tempHCV0[n.getID()]=n.getProbability();
@@ -237,7 +237,7 @@ public class CDTrain {
 					double[] h0=this.rbm.getNodeState(1);//ȡ��H0;
 					this.rbm.clearNodeState(0);//��տɼ��
 					double[] v1=this.rbm.getNodeState(0);//ȡ��V1
-					this.rbm.clearNodeState(1);//������ز�
+					this.rbm.clearNodeState(1);//������زￄ1�7
 					double[] tempHCV1=new double[this.rbm.hn];//�������ز�ڵ�ĸ���
 //					for(RBMNode n:this.rbm.Nodes){
 //						if(n.getType()==1){
@@ -265,7 +265,7 @@ public class CDTrain {
 					for(RBMNode n:this.rbm.hNodes)
 						tempDeltaBH[n.getID()]+=tempHCV0[n.getID()]-tempHCV1[n.getID()];
 					
-				}//һ��minibatch��ѵ������ȫ�����
+				}//һ��minibatch��ѵ������ȫ����ￄ1�7
 				
 				//Tool.PrintW(tempDeltaW);
 				//��������Ȩֵ
@@ -276,7 +276,7 @@ public class CDTrain {
 					}
 				}
 				
-				//this.rbm.UpdateRBM();//����RBM,����ֻ��ʾ�˻���Ȩֵ���ڵ��ƫ��ֵҪ��������
+				//this.rbm.UpdateRBM();//����RBM,����ֻ��ʾ�˻���Ȩֵ���ڵ��ƫ��ֵҪ�������ￄ1�7
 //				for(RBMNode n:this.rbm.Nodes){//���½ڵ�bias
 //					if(n.getType()==0){//���¿ɼ���bias
 //						n.setBias(n.getBias()+this.rate/(double)d.getDataCount()*(tempDeltaBV[n.getID()]));
@@ -294,12 +294,13 @@ public class CDTrain {
 			epoch++;
 //			DBNTrain.print_time("calculate the error");
 //			double tempE=this.Errorta();
-//			
-//			System.out.println("��"+epoch+" ��ѵ�����ع����"+tempE);
-//			if(tempE<=argSC || epoch >= this.max_try){
-//				System.out.println("����"+epoch+" ��ѵ����RBM ѵ������");
-//				break;				
-//			}
+			
+			//System.out.println("��"+epoch+" ��ѵ�����ع���ￄ1�7"+tempE);
+			//if(tempE<=argSC || epoch >= this.max_try){
+			if(epoch >= this.max_try){
+				System.out.println("����"+epoch+" ��ѵ����RBM ѵ������");
+				break;				
+			}
 			
 		}
 

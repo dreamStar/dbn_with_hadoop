@@ -51,8 +51,10 @@ public class Test {
 //		System.out.print("data ready.\n");
 //		tempI_ex = null;
 			
-		double[][] tempI = get_data_from_file("/mnt/hgfs/share/mnist_data_for_java/test.txt");
-		Data tempD=new Data(tempI,false,true);//�����һ�������ĳһ���Խ��еĹ�һ������ͼ����Բ�����
+		//double[][] tempI = get_data_from_file("/mnt/hgfs/share/mnist_data_for_java/test.txt");
+		
+		double[][] tempI = get_data_from_file("D:/Virtual Machines/share/mnist_data_for_java/test.txt");
+		Data tempD=new Data(tempI,false,true);//�����һ�������ĳһ���Խ��еĹ�һ������ͼ����Բ����ￄ1�7
 		
 		//Tool.PrintW(Data.Normalization(tempI));
 	    
@@ -75,7 +77,7 @@ public class Test {
 		
 		DBNTrain tempT=new DBNTrain(tempD,tempS);
 		DBNTrain.print_time("begin to pretrain");
-		//tempT.greedyLayerwiseTraining(0.1,0.001,new L1(),0,10);
+		//tempT.greedyLayerwiseTraining(0.1,0.001,new L1(),2,10);
 		
 		
 //		byte[] s = tempS.toBytes();

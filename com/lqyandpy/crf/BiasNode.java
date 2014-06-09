@@ -73,4 +73,10 @@ public class BiasNode implements Node {
 		
 	}
 
+	@Override
+	public void clearNodeRecursive() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

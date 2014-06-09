@@ -7,26 +7,38 @@ public class HiddenNode implements Node {
 	public ArrayList<Link> Links=new ArrayList<Link>();
 	public int id;
 	private ActivationFunction func;
-	private double cache;
+	private Double cache = Double.NaN;
 	private double delta;
 //	public double bias;
 	
 	@Override
 	public double getOutput() {
-		double tempSum=0;
-		for(Link l:Links){
-			Node tempN=l.From;
-			tempSum+=l.Weight*tempN.getOutput();
+		if(this.cache.isNaN())
+		{
+			double tempSum = 0;
+			for (Link l : Links) {
+				Node tempN = l.From;
+				tempSum += l.Weight * tempN.getOutput();
+			}
+			// tempSum+=bias;
+			this.cache = tempSum;
 		}
-		//tempSum+=bias;
-		this.cache=tempSum;
 		
 	//	System.out.println("我是隐层节点 "+this.id+"，输出 "+func.evaluate(tempSum));
 		
-		return func.evaluate(tempSum);
+		return func.evaluate(this.cache);
 	}
 	
-	
+	public void clearNodeRecursive()
+	{
+		if(this.cache.isNaN())
+			return;
+		this.cache = Double.NaN;
+		for (Link l : Links) {
+			Node tempN = l.From;
+			tempN.clearNodeRecursive();
+		}
+	}
 
 	@Override
 	public int getFanIn() {
